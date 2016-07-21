@@ -1,0 +1,57 @@
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+		script(src='/javascripts/global.js')
+	body
+		div#header
+			div#title
+				| Portfolio of Josh Bacon
+			div#navbar
+				div.navitem Link1
+				div.navitem Link2
+				div.navitem Link3
+				div.navitem Link4
+		div#content
+			div#menu
+				block menu
+			div#main
+				div#main-title
+					block main-title
+				div#main-content
+					block main-content
+				div#main-comments
+					div#comments-title Comments:
+					div#comments
+						div.comment
+							div.commenter-name
+								| Josh Bacon 
+							div.comment-text
+								| This is an example comment. You can reply, up-vote, down-vote etc.. 
+							div.comment-footer
+								span.comment-reply Reply
+								span.comment-up-count 1
+								span.comment-up-vote UpVote
+								span.comment-down-count 1
+								span.comment-down-vote DownVote
+						div.comment 
+							div.commenter-name
+								| Josh Bacon 
+							div.comment-text
+								| Comment 2
+							div.comment-footer
+								span.comment-reply Reply
+								span.comment-up-count 1
+								span.comment-up-vote UpVote
+								span.comment-down-count 1
+								span.comment-down-vote DownVote
+					div.comment-create
+						div.comment-fields
+							input(type='text' placeholder='Comment Text...')
+						div.comment-submit
+							button Submit
+		div#footer
+			block footer
+

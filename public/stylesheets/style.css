@@ -1,0 +1,83 @@
+html {
+  max-width: 1000px;
+  min-width: 400px;
+  margin: auto;
+  background-color: rgba(0,0,0,.7);
+}
+body {
+  margin: inherit;
+  background-image: url("/images/Background.JPG");
+  background-repeat: no-repeat;
+  background-size: 1000px;
+}
+#header {
+	height: 200px;
+}
+#title {
+	display: inline-block;
+	vertical-align: top;
+	width: 200px;
+	margin: 30px 0px 0px 30px;
+	color: white;
+	font: bold 25px Verdana, sans-serif;
+}
+#navbar {
+	display: inline-block;
+	vertical-align: top;
+	float: right;
+	color: white;
+	font: bold 20px Verdana, sans-serif;
+}
+.navitem {
+	display: inline-block;
+	float: right;
+	padding: 5px 15px 5px 15px;
+	border-left: 3px solid;
+	--background-color: rgba(0,0,0,0.3);
+}
+.navitem:hover{
+	color: black;
+	cursor: pointer;
+}
+#content {
+	color: white;
+}
+#menu {
+	display: inline-block;
+	vertical-align: top;
+	padding-left: 125px;
+	padding-top: 40px;
+	float: left;
+	width: 215px;
+	--background-color: rgba(0,0,0,0.8);
+}
+#main.load {
+
+}
+.menu-item {
+	font: bold 15px Verdana, sans-serif;
+}
+.menu-item:hover{
+	font-size: 18px;
+}
+#main {
+	display: inline-block;
+	vertical-align: top;
+	max-width: 660px;
+	background-color: rgba(0,0,0,0.8);
+}
+#main-title {
+	padding: 15px;
+	font: bold 20px Verdana, sans-serif;
+}
+#main-content {
+	padding: 20px;
+	font: normal 15px Verdana, sans-serif;
+}
+#main-comments {
+	padding: 15px;
+	font: normal 15px Verdana, sans-serif;
+}
+#footer {
+	background-color: rgba(0,0,0,0.8)
+}
