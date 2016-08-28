@@ -1,0 +1,52 @@
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+		script(src='/javascripts/global.js')
+	body
+		div#header
+			div#title
+				| Portfolio of Josh Bacon
+			div#navbar
+				div.navitem Link1
+				div.navitem Link2
+				div.navitem Link3
+				div.navitem Link4
+		div#content
+			div#menu
+				block menu
+			div#main
+				div#main-title
+					block main-title
+				div#main-content
+					block main-content
+				div#main-comments
+					div#comments-title Comments:
+					div#comments
+						div.comment 
+							div.content
+								div.name
+									| Josh Bacon 
+								div.text
+									| Comment 2
+							div.footer
+								span.reply Reply
+								span.up-count 1
+								span.up-vote UpVote
+								span.down-count 1
+								span.down-vote DownVote
+							div.create
+								div.input-fields
+									input.name(type='text', placeholder='Name...')
+									input.text(type='text', placeholder='Comment Text...')
+								button.submit Submit
+						div.create
+							div.input-fields
+								input.name(type='text', placeholder='Name...')
+								input.text(type='text', placeholder='Comment Text...')
+							button.submit Submit
+		div#footer
+			block footer
+

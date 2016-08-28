@@ -1,67 +1,119 @@
 $(document).ready(function() {
-	var entityID = '1234';
-	loadComments(entityID);
-});
+	var entityID = '1234';	//For Testing Purposes
+	//Load Existing Comments
+	getComments(entityID, null, function(err, comments) {
+		if(err) {
+			
+		} else {
+			var commentsHtml = "";
+			$.each(comments, function(i, comment) {
+				commentsHtml += createHTMLForComment(comment)
+			})
+			$("#comments").html(commentsHtml);
+		}
+	});
+	//Allows JQuery to select static AND dynamic content
+	$('#comments').on('click', '.submit', function() {
+		//Steps:
+		//	1) Use JQuery to find & construct Comment object
+		//	2) Verify/Validate Comment
+		//	3) User Ajax to POST comment.
+		//	4) Check error and/or update U.I.
+		var comment = { };
+		comment.commenterName = $(this)
+			.siblings(".input-fields")
+			.children(".name")
+			.val();
+		comment.commentText = $(this)
+			.siblings(".input-fields")
+			.children(".text")
+			.val();
+		//comment.parentCommentID = null;
+		comment.entityID = "1234";
 
-function generateCreateCommentHtml(entityID, parentCommentID) {
-	var createCommentHtml;
-	createCommentHtml += "<div class='comment-create' ";
-	if(entityID != undefined)
-		createCommentHtml += "data-entityID='"+entityID+"'' ";
-	if(parentCommentID != undefined)
-		createCommentHtml += "data-parentCommentID='"+parentCommentID+"'' ";
-	createCommentHtml += ">";
-	createCommentHtml += "<input type='text' placeholder='Comment Text...' >";
-	createCommentHtml += "<button>Submit</button>";
-	createCommentHtml += "</div>";
-	return createCommentHtml;
-}
-
-function loadComments(entityID) {
-	var commentHtml;
-
-	//JQuery AJAX Call for JSON object
-	//$.getJSON('/comments/getChildCommentsForEntity', entityID, function(err, data) {
-	$.getJSON('/comments/getAllComments', function(err, data) {
-		//Foreach Item in JSON
-		$.each(data, function() {
-			commentHtml += "<div class='comment'>";
-			commentHtml += "<div class='commenter-name'>"+this.commentorName+"</div>";
-			commentHtml += "<div class='comment-text'>"+this.commentText+"</div>";
-			commentHtml += "<div class='comment-footer'>";
-			commentHtml += "<span class='comment-reply>Reply</span>";
-			commentHtml += "<span class='comment-up-count>"+this.countUpVote+"</span>";
-			commentHtml += "<span class='comment-up-vote>UpVote</span>";
-			commentHtml += "<span class='comment-down-count>"+this.countDownVote+"</span>";
-			commentHtml += "<span class='comment-down-vote>DownVote</span>";
-			commentHtml += "</div>";
-			commentHtml += "</div>";
+		postComment(comment, function(err, comment) {
+			if(err) {
+				//Through Error
+			} else {
+				//Add to U.I.
+			}
 		});
 	});
-	commentHtml += generateCreateCommentHtml(entityID);
-$('.main-comments').html(commentHtml);
-}
-$('.SubmitComment').on('click', function() {
-	//Find Comment details
-	//Submit
-});
-/*
-function createComment(event, params) {
-	event.preventDefault();
-	var entityID = params.entityID;
-	var parentCommentID = params.parentCommentID;
-	//Basic Validation
-	var errorCount = 0;
-	$('#addComment input').each(function(index, val) {
-		if($(this).val() === '') { errorCount++; }
+	$("#comments").on('click', '.reply', function() {
+		//Steps:
+		//	1) Unhide Create Comment Section relative to action
+		//	3) Hide Reply Button
+		$(this).hide();
+		$(this).siblings(".reply-cancel").show();
 	});
-	//Check error count
-	if(errorCount === 0) {
+	$("#comments").on('click', '.cancel', function() {
+		//Steps:
+		//	1) Hide Create Comment section relative to action
+		//	2) Unhide Reply Button
+		$(this).hide();
+		$(this).siblings(".reply").show();
+	});
+});
 
-		$.ajax({
-			type: 'POST',
-			data: new
-		})
-	}
+function createHTMLForComment(comment) {
+	var commentHtml = "";
+	commentHtml += "<div class='comment' data-commentID='";
+	commentHtml += comment._id;
+	commentHtml += "'>";
+	commentHtml += "<div class='name'>";
+	commentHtml += comment.commenterName;
+	commentHtml += "</div>";
+	commentHtml += "<div class='text'>";
+	commentHtml += comment.commentText;
+	commentHtml += "</div>";
+	commentHtml += "<div class='footer'>";
+	commentHtml += "<span class='reply'>Reply</span>";
+	commentHtml += "<span class='reply-cancel'>Cancel</span>";
+	commentHtml += "<span class='up-count'>1</span>";
+	commentHtml += "<span class='up-vote'>Up</span>";
+	commentHtml += "<span class='down-count'>2</span>";
+	commentHtml += "<span class='down-vote'>Down</span>";
+	commentHtml += "</div>";
+	commentHtml += "<div class='create'>";
+	commentHtml += "<div class='input-fields'>";
+	commentHtml += "<input class='name'>";
+	commentHtml += "<input class='text'>";
+	commentHtml += "</div>";
+	commentHtml += "<div class='submit'>Submit</div>";
+	commentHtml += "</div>";
+	commentHtml += "</div>";
+	return commentHtml;
 }
-*/
+
+function getComments(entityID, parentCommentID, callback) {
+	$.ajax({
+		type: 'GET',
+		data: { entityID: entityID, parentCommentID: parentCommentID },
+		url: '/comments/getComments',
+		dataType: 'JSON'
+	}).done(function(response) {
+		if(response.error) {
+			callback(null, response.data)
+		} else {
+			callback(response.error, response.data);
+		}
+	}).fail(function(response) {
+		callback(response.error)
+	});	
+}
+function postComment(comment, callback) {
+	$.ajax({
+		type: 'POST',
+		data: comment,
+		url: '/comments/createComment',
+		dataType: 'JSON'
+	}).done(function(response) {
+		if(response.error){
+			callback(null, response.data)
+		} else {
+			callback(response.error, response.data)
+		}
+	}).fail(function(response) {
+		callback(response.error)
+	});
+}

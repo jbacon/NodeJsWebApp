@@ -7,9 +7,10 @@ var bodyParser = require('body-parser');
 var assert = require('assert');
 var mongoUtil = require('./mongoUtil');
 
-mongoUtil.connectDB("mongodb://localhost:27017/NodeExpressMongoExampleDB", 
+mongoUtil.connectDB("mongodb://127.0.0.1:27017/NodeExpressMongoExampleDB", 
   function(err) {
-    if(err)  {
+    if(err)  
+    {
       console.log("Unable to connect to MongoDB", err);
     }
     else 
@@ -18,16 +19,16 @@ mongoUtil.connectDB("mongodb://localhost:27017/NodeExpressMongoExampleDB",
     }
   });
 
+
 var routes = require('./routes/index');
 //var users = require('./routes/users');
 var comments = require('./routes/comments');
-
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
