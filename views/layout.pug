@@ -3,50 +3,36 @@ html
 	head
 		title= title
 		link(rel='stylesheet', href='/stylesheets/style.css')
-		script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+		script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js')
 		script(src='/javascripts/global.js')
 	body
-		div#header
-			div#title
-				| Portfolio of Josh Bacon
-			div#navbar
-				div.navitem Link1
-				div.navitem Link2
-				div.navitem Link3
-				div.navitem Link4
-		div#content
-			div#menu
+		header#site-header
+			h1#site-title Portfolio of Josh Bacon
+			nav#site-nav-bar
+				div Link1
+				div Link2
+				div Link3
+				div Link4
+		main
+			nav#main-menu
 				block menu
-			div#main
-				div#main-title
-					block main-title
+			section#main-section
+				header#main-header
+					block header
 				div#main-content
-					block main-content
-				div#main-comments
-					div#comments-title Comments:
-					div#comments
-						div.comment 
-							div.content
-								div.name
-									| Josh Bacon 
-								div.text
-									| Comment 2
-							div.footer
-								span.reply Reply
-								span.up-count 1
-								span.up-vote UpVote
-								span.down-count 1
-								span.down-vote DownVote
+					block content
+				footer#main-footer
+					section#actions
+						span Share
+						span Print
+						span Contact
+					section#comments
+						h1 Comments:
+						footer
 							div.create
-								div.input-fields
-									input.name(type='text', placeholder='Name...')
-									input.text(type='text', placeholder='Comment Text...')
-								button.submit Submit
-						div.create
-							div.input-fields
 								input.name(type='text', placeholder='Name...')
 								input.text(type='text', placeholder='Comment Text...')
-							button.submit Submit
-		div#footer
-			block footer
+								button.submit Submit
+		footer#site-footer
+			| Website Footer (not content specific)
 

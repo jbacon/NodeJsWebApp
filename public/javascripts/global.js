@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	var entityID = '1234';	//For Testing Purposes
 	//Load Existing Comments
-	getComments(entityID, null, function(err, comments) {
+	getComments({ entityID: entityID, pageSize: 10, pageNum: 1 }, function(err, comments) {
 		if(err) {
 			
 		} else {
@@ -9,7 +9,7 @@ $(document).ready(function() {
 			$.each(comments, function(i, comment) {
 				commentsHtml += createHTMLForComment(comment)
 			})
-			$("#comments").html(commentsHtml);
+			$("#comments").children('h1').after(commentsHtml);
 		}
 	});
 	//Allows JQuery to select static AND dynamic content
@@ -21,13 +21,16 @@ $(document).ready(function() {
 		//	4) Check error and/or update U.I.
 		var comment = { };
 		comment.commenterName = $(this)
-			.siblings(".input-fields")
-			.children(".name")
+			.siblings(".name")
 			.val();
 		comment.commentText = $(this)
-			.siblings(".input-fields")
-			.children(".text")
+			.siblings(".text")
 			.val();
+		comment.parentCommentID = $(this)
+			.parent()
+			.parent()
+			.sibling(".comment")
+			.data("commentID");
 		//comment.parentCommentID = null;
 		comment.entityID = "1234";
 
@@ -36,67 +39,95 @@ $(document).ready(function() {
 				//Through Error
 			} else {
 				//Add to U.I.
+				var commentHtml = createHTMLForComment(comment);
+				$(this).parent().siblings(".replies").append(commentHtml);
 			}
 		});
 	});
-	$("#comments").on('click', '.reply', function() {
-		//Steps:
-		//	1) Unhide Create Comment Section relative to action
-		//	3) Hide Reply Button
-		$(this).hide();
-		$(this).siblings(".reply-cancel").show();
+	$("#comments").on('click', '.toggleReplies', function() {
+		if($(this).text() == "Hide Replies") {
+			$(this).text('Show Replies');
+			$(this).siblings(".replies").hide();
+		}
+		else {
+			$(this).text('Hide Replies');
+				$(this).siblings(".replies").show();
+				if(!($(this).siblings(".replies").html().length > 0)) {
+					var parentCommentID = $(this).parent().data("comemntID");
+					var entityID = $(this).parent().data("entityID");
+					getComments(entityID, parentCommentID, 
+						function(err, comments) {
+							if(err) {
+								
+							} else {
+								var commentsHtml = "";
+								$.each(comments, function(i, comment) {
+									commentsHtml += createHTMLForComment(comment)
+								});
+								$(this).siblings(".replies").html(commentsHtml);
+							}
+						}
+					);
+				}
+		}
 	});
-	$("#comments").on('click', '.cancel', function() {
-		//Steps:
-		//	1) Hide Create Comment section relative to action
-		//	2) Unhide Reply Button
-		$(this).hide();
-		$(this).siblings(".reply").show();
+	$("#comments").on('click', '.toggleReply', function() {
+		if($(this).text() == "Reply") {
+			$(this).text('Cancel');
+			$(this)
+				.siblings(".create").show();
+		}
+		else {
+			$(this).text('Reply');
+			$(this)
+				.siblings(".create").hide();
+		}
 	});
 });
 
 function createHTMLForComment(comment) {
 	var commentHtml = "";
-	commentHtml += "<div class='comment' data-commentID='";
+	commentHtml += "<article class='comment' data-commentID='";
 	commentHtml += comment._id;
+	commentHtml += " data-entityID='";
+	commentHtml += comment.entityID;
 	commentHtml += "'>";
-	commentHtml += "<div class='name'>";
+	commentHtml += "<h1>";
 	commentHtml += comment.commenterName;
-	commentHtml += "</div>";
-	commentHtml += "<div class='text'>";
+	commentHtml += "</h1>";
+	commentHtml += "<p>";
 	commentHtml += comment.commentText;
-	commentHtml += "</div>";
-	commentHtml += "<div class='footer'>";
-	commentHtml += "<span class='reply'>Reply</span>";
-	commentHtml += "<span class='reply-cancel'>Cancel</span>";
+	commentHtml += "</p>";
+	commentHtml += "<footer>";
+	commentHtml += "<span class='toggleReply'>Reply</span>";
 	commentHtml += "<span class='up-count'>1</span>";
 	commentHtml += "<span class='up-vote'>Up</span>";
 	commentHtml += "<span class='down-count'>2</span>";
 	commentHtml += "<span class='down-vote'>Down</span>";
-	commentHtml += "</div>";
-	commentHtml += "<div class='create'>";
-	commentHtml += "<div class='input-fields'>";
+	commentHtml += "<div class='toggleReplies'>Show Replies</div>";
+	commentHtml += "<div class='replies' style='display: none;'></div>";
+	commentHtml += "<div class='create' style='display: none;'>";
 	commentHtml += "<input class='name'>";
 	commentHtml += "<input class='text'>";
+	commentHtml += "<button class='submit'>Submit</button>";
 	commentHtml += "</div>";
-	commentHtml += "<div class='submit'>Submit</div>";
-	commentHtml += "</div>";
-	commentHtml += "</div>";
+	commentHtml += "</footer>";
+	commentHtml += "</article>";
 	return commentHtml;
 }
 
-function getComments(entityID, parentCommentID, callback) {
+function getComments({ entityID, parentCommentID, pageSize=10, pageNum=1 } = {}, callback) {
 	$.ajax({
 		type: 'GET',
-		data: { entityID: entityID, parentCommentID: parentCommentID },
+		data: { 
+			entityID: entityID, 
+			parentCommentID: parentCommentID, 
+			pageSize: pageSize, 
+			pageNum: pageNum },
 		url: '/comments/getComments',
 		dataType: 'JSON'
 	}).done(function(response) {
-		if(response.error) {
-			callback(null, response.data)
-		} else {
-			callback(response.error, response.data);
-		}
+		callback(response.error, response.data);
 	}).fail(function(response) {
 		callback(response.error)
 	});	
@@ -108,11 +139,7 @@ function postComment(comment, callback) {
 		url: '/comments/createComment',
 		dataType: 'JSON'
 	}).done(function(response) {
-		if(response.error){
-			callback(null, response.data)
-		} else {
-			callback(response.error, response.data)
-		}
+		callback(response.error, response.data)
 	}).fail(function(response) {
 		callback(response.error)
 	});

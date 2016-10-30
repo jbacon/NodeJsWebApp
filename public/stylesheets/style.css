@@ -10,10 +10,10 @@ body {
   background-repeat: no-repeat;
   background-size: 1000px;
 }
-#header {
+#site-header {
 	height: 200px;
 }
-#title {
+#site-title {
 	display: inline-block;
 	vertical-align: top;
 	width: 200px;
@@ -21,28 +21,28 @@ body {
 	color: white;
 	font: bold 25px Verdana, sans-serif;
 }
-#navbar {
+#site-nav-bar {
 	display: inline-block;
 	vertical-align: top;
 	float: right;
 	color: white;
 	font: bold 20px Verdana, sans-serif;
 }
-.navitem {
+#site-nav-bar > div {
 	display: inline-block;
 	float: right;
 	padding: 5px 15px 5px 15px;
 	border-left: 3px solid;
 	--background-color: rgba(0,0,0,0.3);
 }
-.navitem:hover{
+#site-nav-bar > div:hover{
 	color: black;
 	cursor: pointer;
 }
-#content {
+main {
 	color: white;
 }
-#menu {
+#main-menu {
 	display: inline-block;
 	vertical-align: top;
 	padding-left: 125px;
@@ -51,22 +51,19 @@ body {
 	width: 215px;
 	--background-color: rgba(0,0,0,0.8);
 }
-#main.load {
-
-}
-.menu-item {
+#main-menu > div {
 	font: bold 15px Verdana, sans-serif;
 }
-.menu-item:hover{
+#main-menu > div:hover{
 	font-size: 18px;
 }
-#main {
+#main-section {
 	display: inline-block;
 	vertical-align: top;
 	max-width: 660px;
 	background-color: rgba(0,0,0,0.8);
 }
-#main-title {
+#main-header {
 	padding: 15px;
 	font: bold 20px Verdana, sans-serif;
 }
@@ -74,10 +71,10 @@ body {
 	padding: 20px;
 	font: normal 15px Verdana, sans-serif;
 }
-#main-comments {
+#main-footer {
 	padding: 15px;
 	font: normal 15px Verdana, sans-serif;
 }
-#footer {
+#site-footer {
 	background-color: rgba(0,0,0,0.8)
 }
