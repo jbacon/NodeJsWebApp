@@ -6,7 +6,7 @@ html {
 }
 body {
   margin: inherit;
-  background-image: url("/images/Background.JPG");
+  background-image: url("/images/Background.jpg");
   background-repeat: no-repeat;
   background-size: 1000px;
 }

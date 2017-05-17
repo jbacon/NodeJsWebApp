@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var assert = require('assert');
 var mongoUtil = require('./mongoUtil');
 
-mongoUtil.connectDB("mongodb://127.0.0.1:27017/NodeExpressMongoExampleDB", 
+mongoUtil.connectDB("mongodb://172.17.0.2:27017/NodeJSWebApp", 
   function(err) {
     if(err)  
     {

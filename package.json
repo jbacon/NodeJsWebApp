@@ -1,17 +1,18 @@
 {
-  "name": "NodeExpressMongoExample",
-  "version": "0.0.0",
-  "private": true,
+  "name": "NodeJsWebApp",
+  "version": "1.0.0",
+  "description": "Node.js web app example using express.js and mongodb",
+  "main": "index.js",
   "scripts": {
-    "start": "node ./bin/www",
-    "debug": "node --debug ./bin/www",
-    "inspect": "node --inspect ./bin/www"
+    "start": "node --inspect=localhost:9229 --inspect-brk ./bin/www"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "express": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
     "debug": "latest",
-    "express": "latest",
     "pug": "latest",
     "morgan": "latest",
     "serve-favicon": "latest",

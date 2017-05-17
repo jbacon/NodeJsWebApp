@@ -7,6 +7,7 @@ router.post('/createComment', function(req, res, next) {
 	console.log("Received Request: Create Comment");
 	comments.createComment(req.body, function(err, results) {
 		if(err) {
+			console.log(err);
 			res.status(500).json({ error: err });
 		}
 		else {
@@ -24,6 +25,21 @@ router.get('/getComments', function(req, res, next) {
 				res.status(500).json({ error: err})
 			} else {
 				res.json({ data: docs });
+			}
+		}
+	);
+});
+router.post('/deleteComment', function(req, res, next) {
+	console.log("Received Request: deleteComment(" + JSON.stringify(req.query) + ")");
+	comments.deleteComment(
+		req.body,
+		function(err, results) {
+			if(err){
+				console.log(err);
+				res.status(500).json({ error: err });
+			}
+			else {
+				res.json({ data: results.ops });
 			}
 		}
 	);
