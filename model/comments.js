@@ -33,7 +33,7 @@ exports.deleteComment = function({ entityID, commentID } = {}, callback) {
 	var collection = dbContext.collection('comments');
 	var query = {};
 	query.entityID = entityID;
-	query._id = new mongoUtil.getDBContext().ObjetID(commentID);
+	query._id = new mongoUtil.getObjectID(commentID);
 	collection.deleteOne(query, function(err, result) {
 		if(err) {
 			console.log(err);
