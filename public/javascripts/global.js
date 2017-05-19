@@ -1,24 +1,30 @@
 $(document).ready(function() {
 	var entityID = '1234';	//For Testing Purposes
 	//Load Existing Comments
-	getComments({ entityID: entityID, pageSize: 10, pageNum: 1 }, function(err, comments) {
-		if(err) {
+	// getComments({ entityID: entityID, pageSize: 10, pageNum: 1 }, function(err, comments) {
+	// 	if(err) {
 			
-		} else {
-			var commentsHtml = "";
-			$.each(comments, function(i, comment) {
-				commentsHtml += createHTMLForComment(comment)
-			})
-			$("#comments").children('h1').after(commentsHtml);
-		}
-	});
+	// 	} else {
+	// 		var commentsHtml = "";
+	// 		$.each(comments, function(i, comment) {
+	// 			commentsHtml += createHTMLForComment(comment)
+	// 		})
+	// 		$("#comments").children('footer').children('.replies').prepend(commentsHtml);
+	// 	}
+	// });
 	//Allows JQuery to select static AND dynamic content
 	$('#comments').on('click', '.submit', function() {
 		//Steps:
 		//	1) Use JQuery to find & construct Comment object
 		//	2) Verify/Validate Comment
 		//	3) User Ajax to POST comment.
-		//	4) Check error and/or update U.I.
+		//	4) Check Result:
+		//		a) Success:
+		//			1. Dynamically add new content
+		//			2. Clear form fields.
+		//			3. Click ToggleReply button (to hide comment form)
+		//		b) Error:
+		//			1. Dynamically add new contne
 		var comment = { };
 		comment.commenterName = $(this)
 			.siblings(".name")
@@ -31,16 +37,27 @@ $(document).ready(function() {
 			.parent()
 			.parent()
 			.data("comment-id");
-		//comment.parentCommentID = null;
 		comment.entityID = "1234";
-
-		postComment(comment, function(err, comment) {
+		postComment.call(this, comment, function(err, comment) {
 			if(err) {
 				//Through Error
 			} else {
 				//Add to U.I.
-				var commentHtml = createHTMLForComment(comment);
-				$(this).parent().siblings(".replies").append(commentHtml);
+				var commentHtml = createHTMLForComment(comment[0]);
+				$(this)
+					.parent()
+					.siblings(".replies")
+					.append(commentHtml);
+				$(this)
+					.siblings(".name")
+					.val('');
+				$(this)
+					.siblings(".text")
+					.val('');
+				$(this)
+					.parent()
+					.siblings('.toggleReply')
+					.trigger('click');
 			}
 		});
 	});
@@ -55,11 +72,13 @@ $(document).ready(function() {
 			if(!($(this).siblings(".replies").html().length > 0)) {
 				var parentCommentID = $(this)
 					.parent()
-					.data("comemnt-id");
+					.parent()
+					.data("comment-id");
 				var entityID = $(this)
 					.parent()
+					.parent()
 					.data("entity-id");
-				getComments({ entityID: entityID, parentCommentID: parentCommentID }, 
+				getComments.call(this, { entityID: entityID, parentCommentID: parentCommentID }, 
 					function(err, comments) {
 						if(err) {
 							
@@ -96,7 +115,7 @@ $(document).ready(function() {
 			.parent()
 			.parent()
 			.data("entity-id")
-		deleteComment({ entityID: entityID, commentID: commentID }, 
+		deleteComment.call(this, { entityID: entityID, commentID: commentID }, 
 			function(err, data) {
 				if(err) {
 					//Through Error
@@ -138,6 +157,7 @@ function createHTMLForComment(comment) {
 
 function getComments({ entityID, parentCommentID, pageSize=10, pageNum=1 } = {}, callback) {
 	$.ajax({
+		context: this,
 		type: 'GET',
 		data: { 
 			entityID: entityID, 
@@ -147,25 +167,27 @@ function getComments({ entityID, parentCommentID, pageSize=10, pageNum=1 } = {},
 		url: '/comments/getComments',
 		dataType: 'JSON'
 	}).done(function(response) {
-		callback(response.error, response.data);
+		callback.call(this, response.error, response.data);
 	}).fail(function(response) {
-		callback(response.error)
+		callback.call(this, response.error)
 	});	
 }
 function postComment(comment, callback) {
 	$.ajax({
+		context: this,
 		type: 'POST',
 		data: comment,
 		url: '/comments/createComment',
 		dataType: 'JSON'
 	}).done(function(response) {
-		callback(response.error, response.data)
+		callback.call(this, response.error, response.data)
 	}).fail(function(response) {
-		callback(response.error)
+		callback.call(this, response.error)
 	});
 }
 function deleteComment({ entityID, commentID } = {}, callback) {
 	$.ajax({
+		context: this,
 		type: 'POST',
 		data: {
 			entityID: entityID,
@@ -174,9 +196,9 @@ function deleteComment({ entityID, commentID } = {}, callback) {
 		dataType: 'JSON'
 	})
 	.done(function(response) {
-		callback(response.error, response.data)
+		callback.call(this, response.error, response.data)
 	})
 	.fail(function(response) {
-		callback(response.error)
+		callback.call(this, response.error)
 	});
 }
