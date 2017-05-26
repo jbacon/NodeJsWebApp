@@ -1,17 +1,4 @@
 $(document).ready(function() {
-	var entityID = '1234';	//For Testing Purposes
-	//Load Existing Comments
-	// getComments({ entityID: entityID, pageSize: 10, pageNum: 1 }, function(err, comments) {
-	// 	if(err) {
-			
-	// 	} else {
-	// 		var commentsHtml = "";
-	// 		$.each(comments, function(i, comment) {
-	// 			commentsHtml += createHTMLForComment(comment)
-	// 		})
-	// 		$("#comments").children('footer').children('.replies').prepend(commentsHtml);
-	// 	}
-	// });
 	//Allows JQuery to select static AND dynamic content
 	$('#comments').on('click', '.submit', function() {
 		//Steps:
@@ -25,41 +12,48 @@ $(document).ready(function() {
 		//			3. Click ToggleReply button (to hide comment form)
 		//		b) Error:
 		//			1. Dynamically add new contne
-		var comment = { };
-		comment.commenterName = $(this)
-			.siblings(".name")
-			.val();
-		comment.commentText = $(this)
-			.siblings(".text")
-			.val();
-		comment.parentCommentID = $(this)
-			.parent()
-			.parent()
-			.parent()
-			.data("comment-id");
-		comment.entityID = "1234";
-		postComment.call(this, comment, function(err, comment) {
-			if(err) {
-				//Through Error
-			} else {
-				//Add to U.I.
-				var commentHtml = createHTMLForComment(comment[0]);
-				$(this)
-					.parent()
-					.siblings(".replies")
-					.append(commentHtml);
-				$(this)
-					.siblings(".name")
-					.val('');
-				$(this)
-					.siblings(".text")
-					.val('');
-				$(this)
-					.parent()
-					.siblings('.toggleReply')
-					.trigger('click');
+		postComment.call(this, 
+			{
+				comment: {
+					name: $(this)
+						.siblings(".name")
+						.val(),
+					text: $(this)
+						.siblings(".text")
+							.val(),
+					articleID: $('#main-content')
+						.data("article-id"),
+					parentCommentID: $(this)
+						.parent()
+						.parent()
+						.parent()
+						.data("id")
+				}
+			}, 
+			function(err, comment) {
+				if(err) {
+					alert("failed to create comment"+err)
+				} else {
+					//Add to U.I.
+					var commentHtml = createHTMLForComment(comment);
+					$(this)
+						.parent()
+						.siblings(".replies")
+						.append(commentHtml);
+					//Clear input fields
+					$(this)
+						.siblings(".name")
+						.val('');
+					$(this)
+						.siblings(".text")
+						.val('');
+					$(this)
+						.parent()
+						.siblings('.toggleReply')
+						.trigger('click');
+				}
 			}
-		});
+		);
 	});
 	$("#comments").on('click', '.toggleReplies', function() {
 		if($(this).text() == "Hide Replies") {
@@ -73,15 +67,14 @@ $(document).ready(function() {
 				var parentCommentID = $(this)
 					.parent()
 					.parent()
-					.data("comment-id");
-				var entityID = $(this)
 					.parent()
-					.parent()
-					.data("entity-id");
-				getComments.call(this, { entityID: entityID, parentCommentID: parentCommentID }, 
+					.data("id");
+				var articleID = $('#main-content')
+					.data("article-id");
+				getComments.call(this, { articleID: articleID, parentCommentID: parentCommentID }, 
 					function(err, comments) {
 						if(err) {
-							
+							alert('Failed to get comments'+err)
 						} else {
 							var commentsHtml = "";
 							$.each(comments, function(i, comment) {
@@ -107,18 +100,15 @@ $(document).ready(function() {
 		}
 	});
 	$("#comments").on('click', '.delete', function() {
-		commentID = $(this)
+		var commentID = $(this)
 			.parent()
 			.parent()
-			.data("comment-id")
-		entityID = $(this)
-			.parent()
-			.parent()
-			.data("entity-id")
-		deleteComment.call(this, { entityID: entityID, commentID: commentID }, 
+			.data("id")
+		deleteComment.call(this, 
+			{ commentID: commentID }, 
 			function(err, data) {
 				if(err) {
-					//Through Error
+					alert('Failed to delete comment'+err)
 				} else {
 					//Remove from U.I.
 					$(this)
@@ -133,9 +123,9 @@ $(document).ready(function() {
 
 function createHTMLForComment(comment) {
 	var commentHtml =
-		"<article class='comment' data-comment-id='"+comment._id+"' data-entity-id='"+comment.entityID+"'>" +
-		"<h1>"+comment.commenterName+"</h1>" +
-		"<p>"+comment.commentText+"</p>" +
+		"<article class='comment' data-id='"+comment._id+"' data-article-id='"+comment.articleID+"'>" +
+		"<h1>"+comment.name+"</h1>" +
+		"<p>"+comment.text+"</p>" +
 		"<footer>" +
 		"<span class='up-count'>1</span>" +
 		"<span class='up-vote'>Up</span>" +
@@ -153,52 +143,4 @@ function createHTMLForComment(comment) {
 		"</footer>" +
 		"</article>";
 	return commentHtml;
-}
-
-function getComments({ entityID, parentCommentID, pageSize=10, pageNum=1 } = {}, callback) {
-	$.ajax({
-		context: this,
-		type: 'GET',
-		data: { 
-			entityID: entityID, 
-			parentCommentID: parentCommentID, 
-			pageSize: pageSize, 
-			pageNum: pageNum },
-		url: '/comments/getComments',
-		dataType: 'JSON'
-	}).done(function(response) {
-		callback.call(this, response.error, response.data);
-	}).fail(function(response) {
-		callback.call(this, response.error)
-	});	
-}
-function postComment(comment, callback) {
-	$.ajax({
-		context: this,
-		type: 'POST',
-		data: comment,
-		url: '/comments/createComment',
-		dataType: 'JSON'
-	}).done(function(response) {
-		callback.call(this, response.error, response.data)
-	}).fail(function(response) {
-		callback.call(this, response.error)
-	});
-}
-function deleteComment({ entityID, commentID } = {}, callback) {
-	$.ajax({
-		context: this,
-		type: 'POST',
-		data: {
-			entityID: entityID,
-			commentID: commentID },
-		url: '/comments/deleteComment',
-		dataType: 'JSON'
-	})
-	.done(function(response) {
-		callback.call(this, response.error, response.data)
-	})
-	.fail(function(response) {
-		callback.call(this, response.error)
-	});
 }

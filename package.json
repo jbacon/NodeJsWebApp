@@ -4,7 +4,7 @@
   "description": "Node.js web app example using express.js and mongodb",
   "main": "index.js",
   "scripts": {
-    "start": "node --inspect=localhost:9229 --inspect-brk ./bin/www"
+    "start": "node --inspect=localhost:9229 ./bin/www"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,8 @@
     "pug": "latest",
     "morgan": "latest",
     "serve-favicon": "latest",
+    "markdown": "latest",
+    "sanitize-html": "latest",
     "mongodb": "latest"
   }
 }

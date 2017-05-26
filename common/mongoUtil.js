@@ -2,28 +2,27 @@ var mongodb = require('mongodb')
 var mongoClient = mongodb.MongoClient;
 var dbContext;
 
-exports.connectDB = function (url, done) {
+exports.connectDB = function (url, callback) {
   console.log("Attempting to connect to MongoDB...");
   mongoClient.connect(url, function(err, db) {
     console.log("Attempted to connect to MongoDB");
     if(err) 
-      done(err);
+      callback(err);
     else {
       dbContext = db;
-      done();
+      callback();
     }
   })
 }
-exports.getDbContext = function() {
-  return dbContext;
-}
-exports.closeDB = function() {
-  if(dbContext) {
-    dbContext.close(function(err, result) {
-      dbContext = null;
-      done(err);
-    })
-  }
+exports.closeDB = function(callback) {
+  dbContext.close(function(err, result) {
+    if(err) {
+      callback(err)
+    }
+    else {
+      callback(err, result);
+    }
+  })
 }
 exports.createDocument = function({ collection, document } = {}, callback) {
   var collection = dbContext.collection(collection);
@@ -35,9 +34,7 @@ exports.createDocument = function({ collection, document } = {}, callback) {
 }
 exports.deleteDocument = function({ collection, documentID } = {}, callback) {
   var collection = dbContext.collection(collection);
-  var query = {};
-  query._id = new mongoUtil.getObjectID(documentID);
-  collection.deleteOne(query, function(err, result) {
+  collection.deleteOne({ _id: documentID }, function(err, result) {
     if(err) {
       callback(err);
     }
@@ -46,9 +43,9 @@ exports.deleteDocument = function({ collection, documentID } = {}, callback) {
     }
   });
 }
-exports.updateDocument = function({ collection, query } = {}, callback) {
+exports.updateDocument = function({ collection, document } = {}, callback) {
   var collection = dbContext.collection(collection);
-  collection.updateOne(query, function(err, result) {
+  collection.deleteOne(document, function(err, result) {
     if(err) {
       console.log(err);
       callback(err);

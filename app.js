@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var assert = require('assert');
-var mongoUtil = require('./mongoUtil');
+var mongoUtil = require('./common/mongoUtil');
 
 mongoUtil.connectDB("mongodb://172.17.0.2:27017/NodeJSWebApp", 
   function(err) {
@@ -34,7 +34,7 @@ app.set('view engine', 'pug');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true })); // Extended true always nested objects in req.body
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
