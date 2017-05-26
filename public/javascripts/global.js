@@ -67,7 +67,6 @@ $(document).ready(function() {
 				var parentCommentID = $(this)
 					.parent()
 					.parent()
-					.parent()
 					.data("id");
 				var articleID = $('#main-content')
 					.data("article-id");

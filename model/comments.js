@@ -86,17 +86,14 @@ exports.createComment = function({ comment } = {}, callback)
 	}
 }
 exports.getComments = function({ articleID=undefined, commentID=undefined, parentCommentID=undefined, pageSize=10, pageNum=1 } = {}, callback) {
-	query = {}
-	if(articleID)
-		query.articleID = articleID
-	if(commentID)
-		query.commentID = commentID
-	if(parentCommentID)
-		query.parentCommentID = parentCommentID
 	mongoUtil.getDocumentsPaginated(
 		{ 
 			collection: 'comments', 
-			query: query,
+			query: {
+				articleID: articleID,
+				commentID: commentID,
+				parentCommentID: parentCommentID
+			},
 			pageSize: pageSize,
 			pageNum: pageNum,
 		},
