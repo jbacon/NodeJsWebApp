@@ -3,11 +3,21 @@ var mongodb = require('mongodb');
 
 class Comment {
 	constructor(comment) {
+		// Use Set methods to perform validation
+		// Set Default/Initial values
 		this._id = comment._id;
 		this.name = comment.name;
 		this.text = comment.text;
 		this.articleID = comment.articleID;
 		this.parentCommentID = comment.parentCommentID;
+		if(comment.upVoteCount)
+			this.upVoteCount = comment.upVoteCount
+		else
+			this.upVoteCount = 0
+		if(comment.downVoteCount)
+			this.downVoteCount = comment.downVoteCount
+		else
+			this.downVoteCount = 0
 	}
 	get _id() {
 		return this.__id;
@@ -22,7 +32,7 @@ class Comment {
 		return this._name;
 	}
 	set name(newName) {
-		if(newName)
+		if(typeof(newName) === 'string')
 			this._name = newName;
 		else
 			throw new Error('Failed to construct comment. Invalid entry for... newName: '+newName)
@@ -31,7 +41,7 @@ class Comment {
 		return this._text;
 	}
 	set text(newText) {
-		if(newText)
+		if(typeof(newText) === 'string')
 			this._text = newText;
 		else
 			throw new Error('Failed to construct comment. Invalid entry for... newText: '+newText)
@@ -40,7 +50,7 @@ class Comment {
 		return this._articleID;
 	}
 	set articleID(newArticleID) {
-		if(newArticleID)
+		if(typeof(newArticleID) === 'string')
 			this._articleID = newArticleID;
 		else
 			throw new Error('Failed to construct comment. Invalid entry for... newArticleID: '+newArticleID)
@@ -54,13 +64,39 @@ class Comment {
 		else
 			throw new Error('Failed to construct comment. Invalid entry for... newParentCommentID: '+newParentCommentID)
 	}
+	get upVoteCount() {
+		return this._upVoteCount;
+	}
+	set upVoteCount(newUpVoteCount) {
+		if(typeof(newUpVoteCount) === 'number')
+			this._upVoteCount = newUpVoteCount;
+		else
+			throw new Error('Failed to construct comment. Invalid entry for... newUpVoteCount: '+newUpVoteCount)
+	}
+	get downVoteCount() {
+		return this._downVoteCount;
+	}
+	set downVoteCount(newDownVoteCount) {
+		if(typeof(newDownVoteCount) === 'number')
+			this._downVoteCount = newDownVoteCount;
+		else
+			throw new Error('Failed to construct comment. Invalid entry for... newDownVoteCount: '+newDownVoteCount)
+	}
+	incrementUpVote() {
+		this.upVoteCount = this.upVoteCount + 1;
+	}
+	incrementDownVote() {
+		this.downVoteCount = this.downVoteCount + 1;
+	}
 	toObject() {
 		return {
 			_id: this._id, 
 			name: this.name,
 			text: this.text,
 			articleID: this.articleID,
-			parentCommentID: this.parentCommentID
+			parentCommentID: this.parentCommentID,
+			upVoteCount: this.upVoteCount,
+			downVoteCount: this.downVoteCount
 		}
 	}
 	toJsonString() {
@@ -85,34 +121,98 @@ exports.createComment = function({ comment } = {}, callback)
 		callback(err)
 	}
 }
-exports.getComments = function({ articleID=undefined, commentID=undefined, parentCommentID=undefined, pageSize=10, pageNum=1 } = {}, callback) {
+exports.getComments = function({ articleID, parentCommentID, _id=undefined, pageSize=10, pageNum=1 } = {}, callback) {
+	var query = {}
+	query.articleID = articleID
+	query.parentCommentID = parentCommentID
+	if(_id) 			
+		query._id = _id
+	mongoUtil.getDocumentsPaginated(
+		{ 
+			collection: 'comments', 
+			query: query,
+			pageSize: pageSize,
+			pageNum: pageNum
+		},
+		function(err, results) {
+			callback(err, results)
+		}
+	);
+}
+exports.deleteComment = function({ _id } = {}, callback) {
+	mongoUtil.deleteDocument(
+		{ 
+			collection: 'comments', 
+			documentID: new mongodb.ObjectID(_id)
+		},
+		function(err, results) {
+			callback(err, results)
+		}
+	);
+}
+exports.incrementDownVoteCount = function({ _id } = {}, callback) {
 	mongoUtil.getDocumentsPaginated(
 		{ 
 			collection: 'comments', 
 			query: {
-				articleID: articleID,
-				commentID: commentID,
-				parentCommentID: parentCommentID
+				_id: _id
 			},
-			pageSize: pageSize,
-			pageNum: pageNum,
+			pageSize: 1,
+			pageNum: 1
 		},
 		function(err, results) {
-			callback(err, results)
+			try {
+				var commentClass = new Comment(results[0]);
+				commentClass.incrementDownVote()
+				mongoUtil.updateDocument(
+					{ 
+						collection: 'comments', 
+						document: commentClass.toObject()
+					},
+					function(err, result) {
+						callback(err, result)
+					}
+				);
+			}
+			catch(err) {
+				callback(err)
+			}
 		}
 	);
 }
-exports.deleteComment = function({ commentID } = {}, callback) {
-	mongoUtil.deleteDocument(
+exports.incrementUpVoteCount = function({ _id } = {}, callback) {
+	// Get comment from Mongo
+	mongoUtil.getDocumentsPaginated(
 		{ 
 			collection: 'comments', 
-			documentID: new mongodb.ObjectID(commentID)
+			query: {
+				_id: _id
+			},
+			pageSize: 1,
+			pageNum: 1
 		},
 		function(err, results) {
-			callback(err, results)
+			// Try Increment Comment UpVote count
+			try {
+				var commentClass = new Comment(results[0]);
+				commentClass.incrementUpVote()
+				// Update Comment in Mongo
+				mongoUtil.updateDocument(
+					{ 
+						collection: 'comments', 
+						document: commentClass.toObject()
+					},
+					function(err, result) {
+						callback(err, result)
+					}
+				);
+			}
+			catch(err) {
+				callback(err)
+			}
 		}
 	);
-}
+} 
 exports.updateComment = function({ comment } = {}, callback) {
 	try {
 		var commentClass = new Comment(comment);

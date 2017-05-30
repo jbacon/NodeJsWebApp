@@ -19,25 +19,25 @@ article.comment > p {
 article.comment > footer {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.up-count {
+article.comment > footer > span.up-vote-count {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > span.up-vote {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.down-count {
+article.comment > footer > span.down-vote-count {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > span.down-vote {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.toggleReplies {
+article.comment > footer > span.replies-toggle {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > span.replies {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.toggleReply {
+article.comment > footer > span.reply-toggle {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > div.create {

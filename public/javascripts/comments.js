@@ -1,4 +1,4 @@
-function getComments({ commentID=undefined, articleID=undefined, parentCommentID=undefined, pageSize=10, pageNum=1 } = {}, callback) {
+function getComments({ _id=undefined, articleID=undefined, parentCommentID=undefined, pageSize=10, pageNum=1 } = {}, callback) {
 	$.ajax({
 		context: this,
 		type: 'GET',
@@ -31,12 +31,12 @@ function postComment({ comment } = {}, callback) {
 		callback.call(this, response)
 	});
 }
-function deleteComment({ commentID } = {}, callback) {
+function deleteComment({ _id } = {}, callback) {
 	$.ajax({
 		context: this,
 		type: 'POST',
 		data: {
-			commentID: commentID
+			_id: _id
 		},
 		url: '/comments/deleteComment',
 		dataType: 'JSON'
@@ -48,16 +48,37 @@ function deleteComment({ commentID } = {}, callback) {
 		callback.call(this, response.error)
 	});
 }
-
-function getArticle({ articleID } = {}, callback) {
-
+function incrementUpVoteCount({ _id } = {}, callback) {
+	$.ajax({
+		context: this,
+		type: 'POST',
+		data: {
+			_id: _id
+		},
+		url: '/comments/incrementUpVoteCount',
+		dataType: 'JSON'
+	})
+	.done(function(response) {
+		callback.call(this, response.error, response.data)
+	})
+	.fail(function(response) {
+		callback.call(this, response.error)
+	});
 }
-function postArticle({ article } = {}, callback) {
-
-}
-function deleteArticle({ articleID } = {}, callback) {
-
-}
-function updateArticle({ articleID } = {}, callback) {
-
+function incrementDownVoteCount({ _id } = {}, callback) {
+	$.ajax({
+		context: this,
+		type: 'POST',
+		data: {
+			_id: _id
+		},
+		url: '/comments/incrementDownVoteCount',
+		dataType: 'JSON'
+	})
+	.done(function(response) {
+		callback.call(this, response.error, response.data)
+	})
+	.fail(function(response) {
+		callback.call(this, response.error)
+	});
 }

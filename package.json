@@ -1,12 +1,12 @@
 {
   "name": "NodeJsWebApp",
   "version": "1.0.0",
-  "description": "Node.js web app example using express.js and mongodb",
-  "main": "index.js",
+  "author": "Josh Bacon",
+  "description": "Node.js web app example using express.js framework, mongodb, pug view engine, and various other pacakges.",
+  "main": "app.js",
   "scripts": {
     "start": "node --inspect=localhost:9229 ./bin/www"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "latest",
@@ -17,7 +17,9 @@
     "morgan": "latest",
     "serve-favicon": "latest",
     "markdown": "latest",
-    "sanitize-html": "latest",
-    "mongodb": "latest"
+    "sanitize-html": "latest", 
+    "mongodb": "latest",
+    "passport": "latest",
+    "passport-local": "latest"
   }
 }

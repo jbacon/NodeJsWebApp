@@ -1,18 +1,26 @@
 var mongodb = require('mongodb')
-var mongoClient = mongodb.MongoClient;
 var dbContext;
 
-exports.connectDB = function (url, callback) {
-  console.log("Attempting to connect to MongoDB...");
-  mongoClient.connect(url, function(err, db) {
-    console.log("Attempted to connect to MongoDB");
-    if(err) 
-      callback(err);
-    else {
-      dbContext = db;
-      callback();
-    }
-  })
+exports.connectDB = function (url) {
+  console.log("Connecting MongoDB...");
+  if(dbContext) {
+    console.log("Connection to MongoDB already exists...");
+  }
+  else {
+    mongodb.MongoClient.connect(
+        url,
+        (error, db) => {
+          if(error) {
+            console.log("Connection to MongoDB failed...");
+            throw error
+          }
+          else  {
+            dbContext = db;
+            console.log("Connection to MongoDB success...");
+          }
+        }
+      );
+  }
 }
 exports.closeDB = function(callback) {
   dbContext.close(function(err, result) {
@@ -45,7 +53,7 @@ exports.deleteDocument = function({ collection, documentID } = {}, callback) {
 }
 exports.updateDocument = function({ collection, document } = {}, callback) {
   var collection = dbContext.collection(collection);
-  collection.deleteOne(document, function(err, result) {
+  collection.updateOne(document, function(err, result) {
     if(err) {
       console.log(err);
       callback(err);
@@ -79,6 +87,7 @@ exports.getDocumentsBatched = function({ collection, query, batchSize=1 } = {}, 
     },
     function(err) {
       callback(err, undefined);
+    
     }
   );
 }

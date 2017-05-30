@@ -1,0 +1,16 @@
+article.comment(data-id= _id data-article-id= articleID )
+	h1= name
+	p= text
+	footer
+		span.up-vote-count= upVoteCount
+		span.up-vote Up
+		span.down-vote-count= downVoteCount
+		span.down-vote Down
+		span.delete Delete
+		div.replies-toggle Show Replies
+		div.replies(style='display: none')
+		div.reply-toggle Reply
+		div.create(style='display: none')
+			input.name(type='text' placeholder='Name...')
+			input.text(type='text' placeholder='Text...')
+			button.submit Submit
