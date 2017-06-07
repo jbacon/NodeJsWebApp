@@ -1,5 +1,4 @@
-article.comment(data-id= _id data-article-id= articleID )
-	h1= name
+article.comment(data-id=_id data-account-id=accountID data-article-id=articleID data-parent-comment-id=parentCommentID)
 	p= text
 	footer
 		span.up-vote-count= upVoteCount
@@ -10,7 +9,8 @@ article.comment(data-id= _id data-article-id= articleID )
 		div.replies-toggle Show Replies
 		div.replies(style='display: none')
 		div.reply-toggle Reply
-		div.create(style='display: none')
-			input.name(type='text' placeholder='Name...')
-			input.text(type='text' placeholder='Text...')
+		form.create(action='' style='display: none')
+			input.article-id(name='articleID' type='hidden' value=articleID)
+			input.parent-comment-id(name='parentCommentID' type='hidden' value=parent-comment-id)
+			input.text(name='text' type='text' placeholder='Text...')
 			button.submit Submit

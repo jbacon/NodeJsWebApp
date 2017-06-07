@@ -1,95 +1,74 @@
 var express = require('express');
-var comments = require('../model/comments');
+var Comment = require('../model/comments');
+var mongodb = require('mongodb');  
 var router = express.Router();
+var express = require('express');
 
-/* GET Comments listing. */
-router.post('/createComment', function(req, res, next) {
-	console.log("Received Request: createComment. req.body=" + JSON.stringify(req.body)+")");
-	comments.createComment(
-		req.body,
-		function(err, comment) {
-			if(err) {
-				console.log(err);
-				res.status(500).json({ error: err });
-			}
-			else {
-				res.json({ data: comment });
-			}
-	});
+router.post('/create', function(req, res, next) {
+	try {
+		var comment = new Comment(req.body)
+		Comment.create({ comment: comment })
+			.then((results) => {
+				res.json({ data: results.ops[0] });
+			})
+			.catch((err) => {
+				next(err)
+			})
+	}
+	catch(err) {
+		next(err)
+	}
 });
-router.get('/getComments', function(req, res, next) {
-	console.log("Received Request: getComments. req.body=" + JSON.stringify(req.query)+")");
-	comments.getComments(
-		req.query,
-		function(err, comments) {
-			if(err) {
-				console.log(err);
-				res.status(500).json({ error: err})
-			} 
-			else {
-				res.json({ data: comments });
-			}
-		}
-	);
+router.get('/read', function(req, res, next) {
+	Comment.read(req.query)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
 });
-router.post('/deleteComment', function(req, res, next) {
-	console.log("Received Request: deleteComment. req.body=" + JSON.stringify(req.body) + ")");
-	comments.deleteComment(
-		req.body,
-		function(err, result) {
-			if(err){
-				console.log(err);
-				res.status(500).json({ error: err });
-			}
-			else {
-				res.json({ data: result });
-			}
-		}
-	);
+router.post('/delete', function(req, res, next) {
+	Comment.delete(req.body)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
 });
-router.post('/updateComment', function(req, res, next) {
-	console.log("Received Request: updateComment. req.body=" + JSON.stringify(req.body) + ")");
-	comments.deleteComment(
-		req.body,
-		function(err, result) {
-			if(err){
-				console.log(err);
-				res.status(500).json({ error: err });
-			}
-			else {
-				res.end()
-			}
-		}
-	);
+router.post('/update', function(req, res, next) {
+	try {
+		var comment = new Comment(req.body)
+		Comment.update({comment: comment })
+			.then((results) => {
+				res.json({ data: results });
+			})
+			.catch((err) => {
+				next(err)
+			})
+	}
+	catch(err) {
+		next(err)
+	}
 });
 router.post('/incrementUpVoteCount', function(req, res, next) {
-	console.log("Received Request: incrementUpVoteCount. req.body=" + JSON.stringify(req.body) + ")");
-	comments.incrementUpVoteCount(
-		req.body,
-		function(err, result) {
-			if(err){
-				console.log(err);
-				res.status(500).json({ error: err });
-			}
-			else {
-				res.end()
-			}
-		}
-	);
+	Comment.incrementUpVoteCount(req.body)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
 });
 router.post('/incrementDownVoteCount', function(req, res, next) {
-	console.log("Received Request: incrementDownVoteCount. req.body=" + JSON.stringify(req.body) + ")");
-	comments.incrementDownVoteCount(
-		req.body,
-		function(err, result) {
-			if(err){
-				console.log(err);
-				res.status(500).json({ error: err });
-			}
-			else {
-				res.end()
-			}
-		}
-	);
+	Comment.incrementDownVoteCount(req.body)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
 });
+
 module.exports = router;

@@ -9,17 +9,22 @@
   },
   "license": "ISC",
   "dependencies": {
-    "express": "latest",
+    "express": "latest", 
+    "mongodb": "latest",
+    "pug": "latest",
+    "winston": "latest",
+    "passport": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
+    "express-session": "latest",
+    "connect-mongodb-session": "latest",
     "debug": "latest",
-    "pug": "latest",
-    "morgan": "latest",
+    "express-winston": "latest",
     "serve-favicon": "latest",
     "markdown": "latest",
     "sanitize-html": "latest", 
-    "mongodb": "latest",
-    "passport": "latest",
-    "passport-local": "latest"
+    "passport-local": "latest",
+    "validator": "latest",
+    "bcryptjs": "latest"
   }
 }

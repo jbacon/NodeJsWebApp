@@ -1,5 +1,13 @@
-section.comments {
+#register-form {
 	margin: 0px 0px 0px 20px;
+}
+#register-form input {
+	font: bold 20px Verdana, sans-serif;
+}
+#register-form label {
+	font: bold 20px Verdana, sans-serif;
+	width: 150px;
+	display: inline-block;
 }
 section.comments > h1 {
 	margin: 0px 0px 0px 20px;
@@ -41,6 +49,9 @@ article.comment > footer > span.reply-toggle {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > div.create {
+	margin: 0px 0px 0px 0px;
+}
+article.comment > footer > div.create > input.name  {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > div.create > input.text  {

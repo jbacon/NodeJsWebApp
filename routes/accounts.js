@@ -1,11 +1,11 @@
 var express = require('express');
-var Article = require('../model/articles');
+var Account = require('../model/accounts');
 var router = express.Router();
 
 router.post('/create', function(req, res, next) {
 	try {
-		var article = new Article(req.body)
-		Article.create(article)
+		var account = new Account(req.body)
+		Account.create(account)
 			.then((results) => {
 				res.json({ data: results });
 			})
@@ -18,7 +18,7 @@ router.post('/create', function(req, res, next) {
 	}
 });
 router.get('/read', function(req, res, next) {
-	Article.read(req.query)
+	Account.read(req.query)
 		.then((results) => {
 			res.json({ data: results });
 		})
@@ -27,7 +27,7 @@ router.get('/read', function(req, res, next) {
 		})
 });
 router.post('/delete', function(req, res, next) {
-	Article.delete(req.body)
+	Account.delete(req.body)
 		.then((results) => {
 			res.json({ data: results });
 		})
@@ -37,8 +37,8 @@ router.post('/delete', function(req, res, next) {
 });
 router.post('/update', function(req, res, next) {
 	try {
-		var article = new Article(req.body)
-		Article.update(article)
+		var account = new Account(req.body)
+		Account.update(account)
 			.then((results) => {
 				res.json({ data: results });
 			})

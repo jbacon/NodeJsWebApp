@@ -2,20 +2,27 @@ doctype html
 html
 	head
 		title= title
-		link(rel='stylesheet', href='/stylesheets/style.css')
 		script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js' type='text/javascript')
+		//- Interactive Layer - JQuery DOM manipulation
 		script(src='/javascripts/global.js' type='text/javascript')
-		script(src='/javascripts/comments.js' type='text/javascript')
-		script(src='/javascripts/views/commentHtmlGenerator.js' type='text/javascript')
+		//- Presentation Layer - Component HTML (via pug generated client JS functions)
+		script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
+		//- CSS
+		link(rel='stylesheet', href='/stylesheets/layout.css')
+		link(rel='stylesheet', href='/stylesheets/login.css')
+		link(rel='stylesheet', href='/stylesheets/register.css')
 		link(rel='stylesheet', href='/stylesheets/comments.css')
+		link(rel='stylesheet', href='/stylesheets/articles.css')
+		link(rel='stylesheet', href='/stylesheets/roles.css')
+		link(rel='stylesheet', href='/stylesheets/accounts.css')
+		link(rel='stylesheet', href='/stylesheets/modal-window.css')
 	body
 		header#site-header
 			h1#site-title Portfolio of Josh Bacon
 			nav#site-nav-bar
-				div Link1
-				div Link2
-				div Link3
-				div Link4
+				a.register(href='#register-modal-box--open') Register
+				a.logout Logout
+				a.login(href='#login-modal-box--open') Login
 		main
 			nav#main-menu
 				block menu
@@ -34,10 +41,41 @@ html
 						footer
 							div.replies-toggle Show Replies
 							div.replies
-							div.create
-								input.name(type='text', placeholder='Name...')
-								input.text(type='text', placeholder='Comment Text...')
-								button.submit Submit
+							form.create(action='')
+								input.article-id(name='articleID' type='hidden' value='59344c18e987af001c119f93')
+								input.parent-comment-id(name='parentCommentID' type='hidden')
+								input.text(name='text' type='text' placeholder='Text...')
+								input.submit(type='submit')
 		footer#site-footer
-			| Website Footer (not content specific)
-
+			div#login-modal-box--open.modal-box
+				a.modal-box__overlay(href='#')
+				div.modal-box__content
+					a#login-modal-box--close.modal-box--close(href='#') X
+					form#login-form(action='')
+						label(for='email')
+						input.email(id='email' type='email' name='email' placeholder='local-part@sldomain.tld')
+						label(for='password')
+						input.password(id='password' type='password' name='password' placeholder='password..')
+						input.submit(type='submit' href='#')
+			div#register-modal-box--open.modal-box
+				a.modal-box__overlay(href='#')
+				div.modal-box__content
+					a#register-modal-box--close.modal-box--close(href='#') X
+					form#register-form(action='')
+						div
+							label(for='email') Email
+							input.email(id='email' type='email' name='email' placeholder='local-part@sldomain.tld')
+						div
+							label(for='name-first') First Name
+							input.name-first(id='name-first' type='name' name='nameFirst' placeholder='John')
+						div
+							label(for='name-last') Last Name
+							input.name-last(id='name-last' type='name' name='nameLast' placeholder='Doe')
+						div
+							label(for='password') Password
+							input.password(id='password' type='password' name='password' placeholder='password..')
+						div
+							label(for='passwordRetype') Retype Password
+							input.passwordRetype(id='passwordRetype' type='password' name='passwordRetype' placeholder='password..')
+						div
+							input.submit(type='submit')

@@ -28,16 +28,24 @@ body {
 	color: white;
 	font: bold 20px Verdana, sans-serif;
 }
-#site-nav-bar > div {
+#site-nav-bar > a {
+    text-decoration: none;
 	display: inline-block;
 	float: right;
 	padding: 5px 15px 5px 15px;
 	border-left: 3px solid;
 	--background-color: rgba(0,0,0,0.3);
 }
-#site-nav-bar > div:hover{
+#site-nav-bar > a:visited {
+    color: white;
+}
+#site-nav-bar > a:hover {
+    text-decoration: none;
 	color: black;
 	cursor: pointer;
+}
+#site-nav-bar > a:active {
+    color: black;
 }
 main {
 	color: white;
