@@ -84,7 +84,7 @@ app.use(expressWinston.logger({
 }));
 
 app.use('/', routesIndex);
-app.use('/comments', commonAuth.isAuthenticated, routesComments);
+app.use('/comments', routesComments);
 app.use('/articles', routesArticles);
 app.use('/auth', routesAuth);
 app.use('/accounts', routesAccounts);

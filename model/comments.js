@@ -22,8 +22,7 @@ module.exports = class Comment extends Document {
 		return this._accountID;
 	}
 	set accountID(newAccountID) {
-		if(newAccountID === undefined 
-			|| newAccountID === null) {
+		if(newAccountID === undefined || newAccountID === null) {
 			this._accountID = null;
 		}
 		else if(mongodb.ObjectID.isValid(newAccountID)) {
@@ -52,8 +51,7 @@ module.exports = class Comment extends Document {
 		return this._articleID;
 	}
 	set articleID(newArticleID) {
-		if(newArticleID === undefined 
-			|| newArticleID === '') {
+		if(newArticleID === undefined || newArticleID === '' || newArticleID === null) {
 			this._articleID = null;
 		}
 		else if(mongodb.ObjectID.isValid(newArticleID)) {
@@ -68,8 +66,7 @@ module.exports = class Comment extends Document {
 		return this._parentCommentID;
 	}
 	set parentCommentID(newParentCommentID) {
-		if(newParentCommentID === undefined 
-			|| newParentCommentID === '') {
+		if(newParentCommentID === undefined || newParentCommentID === '' || newParentCommentID === null) {
 			this._parentCommentID = null;
 		}
 		else if(mongodb.ObjectID.isValid(newParentCommentID)) {
@@ -84,9 +81,7 @@ module.exports = class Comment extends Document {
 		return this._upVoteCount;
 	}
 	set upVoteCount(newUpVoteCount) {
-		if(newUpVoteCount === null 
-			|| newUpVoteCount === undefined 
-			|| newUpVoteCount === '')
+		if(newUpVoteCount === null || newUpVoteCount === undefined || newUpVoteCount === '')
 			this._upVoteCount = 0;
 		else if(typeof(newUpVoteCount) === 'number')
 			this._upVoteCount = newUpVoteCount;
@@ -97,9 +92,7 @@ module.exports = class Comment extends Document {
 		return this._downVoteCount;
 	}
 	set downVoteCount(newDownVoteCount) {
-		if(newDownVoteCount === null 
-			|| newDownVoteCount === undefined
-			|| newDownVoteCount === '')
+		if(newDownVoteCount === null || newDownVoteCount === undefined || newDownVoteCount === '')
 			this._downVoteCount = 0;
 		else if(typeof(newDownVoteCount) === 'number')
 			this._downVoteCount = newDownVoteCount;
@@ -119,9 +112,10 @@ module.exports = class Comment extends Document {
 	static async create({ comment } = {}) {
 		if(!(comment instanceof Comment))
 			throw new Error('Parameter not instance of Comment')
-		return await super.create({
+		var results = await super.create({
 			doc: comment
 		})
+		return results
 	}
 	static async read({ query={}, pageSize=10, pageNum=1 } = {}) {
 		/* Build simple query.  */
@@ -133,25 +127,28 @@ module.exports = class Comment extends Document {
 			query.parentCommentID = new mongodb.ObjectID(query.parentCommentID);
 		else 
 			query.parentCommentID = null;
-		return await super.read({
+		var results = await super.read({
 			query: query,
 			collection: Comment.COLLECTION_NAME,
 			pageSize: pageSize,
 			pageNum: pageNum
-		})
+		});
+		return results
 	}
 	static async update({ comment } = {}) {
 		if(!(comment instanceof Comment))
 			throw new Error('Failed to create document. Parameter not instance of Comment')
-		return await super.update({
+		var results = await super.update({
 			doc: comment
 		})
+		return results;
 	}
 	static async delete({ _id } = {}) {
-		return await super.delete( {
+		var results = await super.delete( {
 			_id: _id,
 			collection: Comment.COLLECTION_NAME
 		});
+		return results
 	}
 	static async incrementDownVoteCount({ _id } = {}) {
 		var objectID = new mongodb.ObjectID(_id);

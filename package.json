@@ -24,6 +24,7 @@
     "markdown": "latest",
     "sanitize-html": "latest", 
     "passport-local": "latest",
+    "passport-jwt": "latest",
     "validator": "latest",
     "bcryptjs": "latest"
   }

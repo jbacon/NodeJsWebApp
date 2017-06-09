@@ -82,39 +82,3 @@ pug_html = pug_html + "\u003Cinput class=\"text\" name=\"text\" type=\"text\" pl
 pug_html = pug_html + "\u003Cbutton class=\"submit\"\u003E";
 ;pug_debug_line = 16;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 pug_html = pug_html + "Submit\u003C\u002Fbutton\u003E\u003C\u002Fform\u003E\u003C\u002Ffooter\u003E\u003C\u002Farticle\u003E";}.call(this,"_id" in locals_for_with?locals_for_with._id:typeof _id!=="undefined"?_id:undefined,"accountID" in locals_for_with?locals_for_with.accountID:typeof accountID!=="undefined"?accountID:undefined,"articleID" in locals_for_with?locals_for_with.articleID:typeof articleID!=="undefined"?articleID:undefined,"comment" in locals_for_with?locals_for_with.comment:typeof comment!=="undefined"?comment:undefined,"downVoteCount" in locals_for_with?locals_for_with.downVoteCount:typeof downVoteCount!=="undefined"?downVoteCount:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"parent" in locals_for_with?locals_for_with.parent:typeof parent!=="undefined"?parent:undefined,"parentCommentID" in locals_for_with?locals_for_with.parentCommentID:typeof parentCommentID!=="undefined"?parentCommentID:undefined,"text" in locals_for_with?locals_for_with.text:typeof text!=="undefined"?text:undefined,"upVoteCount" in locals_for_with?locals_for_with.upVoteCount:typeof upVoteCount!=="undefined"?upVoteCount:undefined));} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}
-function pug_rethrow(n,e,r,t){if(!(n instanceof Error))throw n;if(!("undefined"==typeof window&&e||t))throw n.message+=" on line "+r,n;try{t=t||require("fs").readFileSync(e,"utf8")}catch(e){pug_rethrow(n,null,r)}var i=3,a=t.split("\n"),o=Math.max(r-i,0),h=Math.min(a.length,r+i),i=a.slice(o,h).map(function(n,e){var t=e+o+1;return(t==r?"  > ":"    ")+t+"| "+n}).join("\n");throw n.path=e,n.message=(e||"Pug")+":"+r+"\n"+i+"\n\n"+n.message,n}function generatehtmlforlogin(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_debug_filename, pug_debug_line;try {;pug_debug_line = 1;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Cform id=\"login-form\"\u003E";
-;pug_debug_line = 2;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Clabel for=\"email\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 3;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Cinput class=\"email\" id=\"email\" type=\"email\" name=\"email\" placeholder=\"Email..\"\u002F\u003E";
-;pug_debug_line = 4;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Clabel for=\"password\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 5;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Cinput class=\"password\" id=\"password\" type=\"password\" name=\"password\" placeholder=\"Password..\"\u002F\u003E";
-;pug_debug_line = 6;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Flogin.pug";
-pug_html = pug_html + "\u003Cinput class=\"submit\" type=\"submit\"\u002F\u003E\u003C\u002Fform\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}
-function pug_rethrow(n,e,r,t){if(!(n instanceof Error))throw n;if(!("undefined"==typeof window&&e||t))throw n.message+=" on line "+r,n;try{t=t||require("fs").readFileSync(e,"utf8")}catch(e){pug_rethrow(n,null,r)}var i=3,a=t.split("\n"),o=Math.max(r-i,0),h=Math.min(a.length,r+i),i=a.slice(o,h).map(function(n,e){var t=e+o+1;return(t==r?"  > ":"    ")+t+"| "+n}).join("\n");throw n.path=e,n.message=(e||"Pug")+":"+r+"\n"+i+"\n\n"+n.message,n}function generatehtmlforregister(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_debug_filename, pug_debug_line;try {;pug_debug_line = 1;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cform id=\"register-form\"\u003E";
-;pug_debug_line = 2;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Clabel for=\"email\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 3;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"email\" id=\"email\" type=\"email\" name=\"email\" placeholder=\"Email..\"\u002F\u003E";
-;pug_debug_line = 4;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Clabel for=\"name-first\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 5;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"name-first\" id=\"name-first\" type=\"name\" name=\"name-first\" placeholder=\"First Name..\"\u002F\u003E";
-;pug_debug_line = 6;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Clabel for=\"name-last\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 7;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"name-last\" id=\"name-last\" type=\"name\" name=\"name-last\" placeholder=\"Last Name..\"\u002F\u003E";
-;pug_debug_line = 8;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Clabel for=\"password\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 9;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"password\" id=\"password\" type=\"password\" name=\"password\" placeholder=\"Password..\"\u002F\u003E";
-;pug_debug_line = 10;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Clabel for=\"passwordRetype\"\u003E\u003C\u002Flabel\u003E";
-;pug_debug_line = 11;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"passwordRetype\" id=\"passwordRetype\" type=\"password\" name=\"passwordRetype\" placeholder=\"Retype Password..\"\u002F\u003E";
-;pug_debug_line = 12;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fregister.pug";
-pug_html = pug_html + "\u003Cinput class=\"submit\" type=\"submit\"\u002F\u003E\u003C\u002Fform\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}

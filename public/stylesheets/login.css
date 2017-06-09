@@ -1,51 +1,11 @@
-section.comments {
+#login-form {
 	margin: 0px 0px 0px 20px;
 }
-section.comments > h1 {
-	margin: 0px 0px 0px 20px;
+#login-form input {
+	font: bold 20px Verdana, sans-serif;
 }
-section.comments > footer {
-	margin: 0px 0px 0px 20px;
-}
-article.comment {
-	margin: 0px 0px 0px 20px;
-}
-article.comment > h1 {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > p {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.up-vote-count {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.up-vote {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.down-vote-count {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.down-vote {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.replies-toggle {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.replies {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > span.reply-toggle {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > div.create {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > div.create > input.name  {
-	margin: 0px 0px 0px 0px;
-}
-article.comment > footer > div.create > input.text  {
-	margin: 0px 0px 0px 0px;
+#login-form label {
+	font: bold 20px Verdana, sans-serif;
+	width: 150px;
+	display: inline-block;
 }

@@ -1,10 +1,11 @@
 var express = require('express');
 var Comment = require('../model/comments');
-var mongodb = require('mongodb');  
+var mongodb = require('mongodb'); 
+var commonAuth = require('../common/authUtil.js'); 
 var router = express.Router();
 var express = require('express');
 
-router.post('/create', function(req, res, next) {
+router.post('/create', commonAuth.isAuthenticated, function(req, res, next) {
 	try {
 		var comment = new Comment(req.body)
 		Comment.create({ comment: comment })
@@ -28,7 +29,7 @@ router.get('/read', function(req, res, next) {
 			next(err)
 		})
 });
-router.post('/delete', function(req, res, next) {
+router.post('/delete', commonAuth.isAuthenticated, function(req, res, next) {
 	Comment.delete(req.body)
 		.then((results) => {
 			res.json({ data: results });
@@ -37,7 +38,7 @@ router.post('/delete', function(req, res, next) {
 			next(err)
 		})
 });
-router.post('/update', function(req, res, next) {
+router.post('/update', commonAuth.isAuthenticated, function(req, res, next) {
 	try {
 		var comment = new Comment(req.body)
 		Comment.update({comment: comment })

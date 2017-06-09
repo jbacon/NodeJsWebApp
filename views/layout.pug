@@ -20,6 +20,7 @@ html
 		header#site-header
 			h1#site-title Portfolio of Josh Bacon
 			nav#site-nav-bar
+				a.greeting(style='display:none') Hello, John Doe!
 				a.register(href='#register-modal-box--open') Register
 				a.logout Logout
 				a.login(href='#login-modal-box--open') Login
@@ -52,9 +53,9 @@ html
 				div.modal-box__content
 					a#login-modal-box--close.modal-box--close(href='#') X
 					form#login-form(action='')
-						label(for='email')
+						label(for='email') Email
 						input.email(id='email' type='email' name='email' placeholder='local-part@sldomain.tld')
-						label(for='password')
+						label(for='password') Password
 						input.password(id='password' type='password' name='password' placeholder='password..')
 						input.submit(type='submit' href='#')
 			div#register-modal-box--open.modal-box

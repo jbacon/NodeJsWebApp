@@ -65,30 +65,33 @@ module.exports = class Document {
 	static async create({ doc } = {}) {
 		if(!(doc instanceof Document))
 			throw new Error('Failed to create document. Parameter not instance of Document')
-		return await mongoUtil.getDB()
+		var results = await mongoUtil.getDB()
 			.collection(doc.constructor.COLLECTION_NAME)
-			.insertOne(doc.toObject())
+			.insertOne(doc.toObject());
+		return results;
 	}
 	static async delete({ _id, collection } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
-		return await mongoUtil.getDB()
+		var results = await mongoUtil.getDB()
 			.collection(collection)
 			.deleteOne( { _id: objectID });
+		return results;
 	}
 	static async update({ doc } = {}) {
 		if(!(doc instanceof Document))
 			throw new Error('Invalid document')
-		return await mongoUtil.getDB()
+		var results = await mongoUtil.getDB()
 			.collection(doc.constructor.COLLECTION_NAME)
 			.updateOne(doc.toObject())
+		return results;
 	}
 	static async read({ query={}, collection, pageSize=10, pageNum=1 } = {}) {
-		var docs = await mongoUtil.getDB()
+		var results = await mongoUtil.getDB()
 			.collection(collection)
 			.find(query)
 			.skip(parseInt(pageSize) * (parseInt(pageNum) - 1))
 			.limit(parseInt(pageSize))
 			.toArray();
-		return docs
+		return results;
 	}
 }

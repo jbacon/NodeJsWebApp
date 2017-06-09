@@ -11,36 +11,26 @@ $(document).ready(function() {
 				$.ajax({
 					context: this,
 					type: 'GET',
-					data: {						
-						articleID: $('#article-header')
-							.data("article-id"), 
-						parentCommentID: $(this)
-							.parent()
-							.parent()
-							.data("id"),
+					data: {	
+						query: {	
+							articleID: $('#article-header')
+								.data("article-id") || null, 
+							parentCommentID: $(this)
+								.parent()
+								.parent()
+								.data("id") || null
+							},			
 						pageSize: 10, 
 						pageNum: 1 
 					},
 					url: '/comments/read',
 					dataType: 'JSON'
 				}).done(function(response) {
-					//Add to U.I.
-					var commentHtml = generatehtmlforcomment(response.data);
-					$(this)
-						.parent()
-						.siblings(".replies")
-						.append(commentHtml);
-					//Clear input fields
-					$(this)
-						.siblings(".name")
-						.val('');
-					$(this)
-						.siblings(".text")
-						.val('');
-					$(this)
-						.parent()
-						.siblings('.reply-toggle')
-						.trigger('click');
+					commentsHtml = ''
+					$.each(response.data, function(i, comment) {
+						commentsHtml += generatehtmlforcomment(comment)
+					});
+					$(this).siblings(".replies").html(commentsHtml);
 				}).fail(function(response) {
 					alert('Error getting comments. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
 				});
@@ -122,7 +112,7 @@ $(document).ready(function() {
 			alert('Error deleting comment. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
 		});
 	});
-	$('#comments').on('click', 'form.create', function(e) {
+	$('#comments').on('submit', 'form.create', function(e) {
 		e.preventDefault()
 		$.ajax({
 			context: this,
@@ -132,20 +122,15 @@ $(document).ready(function() {
 			dataType: 'JSON'
 		}).done(function(response) {
 			//Add to U.I.
-			var commentHtml = commentHtmlGenerator(response.data);
+			var commentHtml = generatehtmlforcomment(response.data);
 			$(this)
-				.parent()
 				.siblings(".replies")
 				.append(commentHtml);
 			//Clear input fields
 			$(this)
-				.siblings(".name")
+				.children(".text")
 				.val('');
 			$(this)
-				.siblings(".text")
-				.val('');
-			$(this)
-				.parent()
 				.siblings('.reply-toggle')
 				.trigger('click');
 		}).fail(function(response) {
@@ -158,9 +143,14 @@ $(document).ready(function() {
 			context: this,
 			type: 'POST',
 			data: $(this).serialize(),
-			url: '/auth/local/login',
-			dataType: 'JSON'
+			url: '/auth/local/token'
 		}).done(function(response) {
+			$('a.logout').show();
+			// $('a.greeting').html('Hello, '+document.cookie('loggedInUser').nameFirst+' '+document.cookie('loggedInUser').nameLast);
+			$('a.greeting').show();
+			$('a.login').hide();
+			$('a.register').hide();
+			$('#login-modal-box--close').click();
 			alert('Login Succesful!')
 		}).fail(function(response) {
 			alert('Login failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
@@ -172,9 +162,9 @@ $(document).ready(function() {
 			context: this,
 			type: 'POST',
 			data: $(this).serialize(),
-			url: '/auth/local/register',
-			dataType: 'JSON'
+			url: '/auth/local/register'
 		}).done(function(response) {
+			$('#register-modal-box--close').click();
 			alert('Registeration Succesful! Try logging in..')
 		}).fail(function(response) {
 			alert('Registeration failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
@@ -184,10 +174,13 @@ $(document).ready(function() {
 		$.ajax({
 			context: this,
 			type: 'POST',
-			data: $(this).serialize(),
-			url: '/auth/local/logout',
-			dataType: 'JSON'
+			url: '/auth/local/logout'
 		}).done(function(response) {
+			$('a.logout').hide();
+			$('a.greeting').html('')
+			$('a.greeting').hide();
+			$('a.login').show();
+			$('a.register').show();
 			alert('Logout Succesful!')
 		}).fail(function(response) {
 			alert('Logout failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
