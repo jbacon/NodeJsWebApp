@@ -3,11 +3,11 @@ html
 	head
 		title= title
 		script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js' type='text/javascript')
-		//- Interactive Layer - JQuery DOM manipulation
+		// Interactive Layer - JQuery DOM manipulation
 		script(src='/javascripts/global.js' type='text/javascript')
-		//- Presentation Layer - Component HTML (via pug generated client JS functions)
+		// Presentation Layer - Component HTML (via pug generated client JS functions)
 		script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
-		//- CSS
+		// CSS
 		link(rel='stylesheet', href='/stylesheets/layout.css')
 		link(rel='stylesheet', href='/stylesheets/login.css')
 		link(rel='stylesheet', href='/stylesheets/register.css')
@@ -22,7 +22,7 @@ html
 			nav#site-nav-bar
 				a.greeting(style='display:none') Hello, John Doe!
 				a.register(href='#register-modal-box--open') Register
-				a.logout Logout
+				a.logout(style='display:none') Logout
 				a.login(href='#login-modal-box--open') Login
 		main
 			nav#main-menu

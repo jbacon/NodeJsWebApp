@@ -8,38 +8,48 @@ var bcrypt = require('bcryptjs');
 exports.getPassport = function() {
   return passport;
 }
-exports.ExtractJwtFromReqCookie = function(req) {
+exports.extractJwt = function(req) {
+    // Check Cookies
     var token = null;
-    if (req && req.cookies)
+    if (req)
     {
-        token = req.cookies['jwt'];
+      if(req.cookies && req.cookies['JWT']) {
+        token = req.cookies['JWT'];
+      }
+      else if(req.headers && req.headers['Authorization']) {
+        token = req.headers['Authorization']
+      }
     }
     return token;
 };
 exports.isAuthenticated = function(req, res, next) {
-  // Check for Json Web Token found (implies JWT based Authentication)
-  if(exports.ExtractJwtFromReqCookie(req)) { 
+  if(exports.extractJwt(req)) { 
     // JWT based authen check
     try {
+      // Custom Authentication Callback for PassportJS
       passport.authenticate(
         'local-jwt',
         (err, user, info) => {
           if (err) { 
             next(err); 
           }
-          if (!user) {
-            var error = new Error('')
-            error.status = 401
-            next(err); 
+          else if (!user) {
+            next(info); 
           }
-          req.logIn(user, function(err) {
-            if (err) { return next(err); }
-            return res.redirect('/users/' + user.username);
-          });
+          else {
+            req.logIn(user, (err) => {
+              if (err) { 
+                next(err); 
+              }
+              else {
+                next();
+              }
+            });
+          }
         })(req, res, next)
     }
     catch(e) {
-      throw e
+      next(err)
     }
   }
   else { // Implies Session based Authentication
@@ -91,17 +101,17 @@ passport.use('local-jwt', new JwtStrategy(
     passReqToCallback: true,
     session: false,
     secretOrKey: 'Super Secret Password!!',
-    jwtFromRequest: exports.ExtractJwtFromReqCookie
+    jwtFromRequest: exports.extractJwt
   },
   (req, jwt_payload, next) => {
     var user = jwt_payload;
     next(null, user)
     // Technically not necessary to verify credentials here.
     // If this function is reach it is already implied that
-    // the user is authenticated via the valid signed token found in the HttpOnly cookies.
+    // the user is authenticated via a valid signed token found in the HttpOnly cookies and/or auth header.
     // This password middleware is executed on each request, 
-    // it would not be optiminal to validate user credentials against database on each request, 
-    // which contrasts session based strategies that
+    // it would sub-optiminal to validate user credentials against database on each request, 
+    // which contrasts other session based strategies that
     // only validate credentials on login requests (not all requests).
   })
 );

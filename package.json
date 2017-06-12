@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "Josh Bacon",
   "description": "Node.js web app example using express.js framework, mongodb, pug view engine, and various other pacakges.",
-  "main": "app.js",
+  "main": "./bin/www",
   "scripts": {
     "start": "node --inspect=localhost:9229 ./bin/www"
   },
@@ -13,6 +13,7 @@
     "mongodb": "latest",
     "pug": "latest",
     "winston": "latest",
+    "jspm": "latest",
     "passport": "latest",
     "body-parser": "latest",
     "cookie-parser": "latest",
@@ -27,5 +28,8 @@
     "passport-jwt": "latest",
     "validator": "latest",
     "bcryptjs": "latest"
+  },
+  "devDependencies": {
+
   }
 }

@@ -146,7 +146,7 @@ $(document).ready(function() {
 			url: '/auth/local/token'
 		}).done(function(response) {
 			$('a.logout').show();
-			// $('a.greeting').html('Hello, '+document.cookie('loggedInUser').nameFirst+' '+document.cookie('loggedInUser').nameLast);
+			$('a.greeting').html('Hello, '+document.cookie('loggedInUser').nameFirst+' '+document.cookie('loggedInUser').nameLast);
 			$('a.greeting').show();
 			$('a.login').hide();
 			$('a.register').hide();

@@ -18,11 +18,13 @@ router.post('/local/login',
 	        		email: req.user.email
 	        	}, 
 	        	{ httpOnly: false });
+			res.clearCookie('JWT'); //Clear cookie
 			res.end();
 	}
 );
 router.post('/local/logout', (req, res, next) => {
 	res.clearCookie('loggedInUser');
+	res.clearCookie('JWT');
 	res.end();
 });
 router.post('/local/register', (req, res, next) => {
@@ -69,10 +71,11 @@ router.post('/local/token', (req, res, next) => {
 		        	{ httpOnly: false }
 		        	);
 				res.cookie(
-		        	'jwt',
+		        	'JWT',
 		        	token, 
 		        	{ httpOnly: true }
 		        	);
+				res.headers['Authorization'] = 'Bearer '+token
 				res.json({ token: token, user: req.user })
 			}
 			else if(results.length > 0) {

@@ -18,5 +18,6 @@ node:7.10.0-alpine \
 '
 cd /app/;
 npm install;
+npm build;
 npm start;
 '
