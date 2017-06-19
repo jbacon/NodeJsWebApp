@@ -21,7 +21,8 @@ router.post('/create', commonAuth.isAuthenticated, function(req, res, next) {
 	}
 });
 router.get('/read', function(req, res, next) {
-	Comment.read(req.query)
+	const data = JSON.parse(req.query.data)
+	Comment.read(data)
 		.then((results) => {
 			res.json({ data: results });
 		})

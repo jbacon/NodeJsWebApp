@@ -16,8 +16,10 @@ docker run \
 node:7.10.0-alpine \
 /bin/sh -c \
 '
+apk update;
+apk add git;
 cd /app/;
 npm install;
-npm build;
+./node_modules/.bin/jspm install
 npm start;
 '

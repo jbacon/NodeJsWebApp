@@ -1,16 +1,18 @@
-article.comment(data-id=_id data-account-id=accountID data-article-id=articleID data-parent-comment-id=parentCommentID)
-	p= text
+article.comment(data-id=_id data-account-id=comment.accountID data-article-id=comment.articleID data-parent-comment-id=comment.parentCommentID)
+	p= comment.text
 	footer
-		span.up-vote-count= upVoteCount
+		span.up-vote-count= comment.upVoteCount
 		span.up-vote Up
-		span.down-vote-count= downVoteCount
+		span.down-vote-count= comment.downVoteCount
 		span.down-vote Down
 		span.delete Delete
+		span.delete.hidden Delete
 		div.replies-toggle Show Replies
-		div.replies(style='display: none')
-		div.reply-toggle Reply
-		form.create(action='' style='display: none')
-			input.article-id(name='articleID' type='hidden' value=articleID)
-			input.parent-comment-id(name='parentCommentID' type='hidden' value=parent-comment-id)
+		div.replies.hidden
+		div.load-more.hidden Load More...
+		div.reply-toggle.hidden Reply
+		form.create.hidden(action='')
+			input.article-id(name='articleID' type='hidden' value=comment.articleID)
+			input.parent-comment-id(name='parentCommentID' type='hidden' value=comment._id)
 			input.text(name='text' type='text' placeholder='Text...')
 			button.submit Submit

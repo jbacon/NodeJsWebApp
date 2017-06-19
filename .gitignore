@@ -1,5 +1,8 @@
 # Josh's Custom Ignores:
 data/ 
+node_modules/
+public/jspm_packages/
+
 
 # Generic Ignores Source
 https://github.com/github/gitignore/blob/master/Node.gitignore

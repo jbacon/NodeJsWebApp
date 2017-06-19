@@ -14,7 +14,9 @@ router.post('/local/login',
 	        res.cookie(
 	        	'loggedInUser',
 	        	{
-	        		user: req.user.nameLast+', '+req.user.nameFirst,
+	        		_id: req.user._id,
+	        		nameLast: req.user.nameLast,
+	        		nameFirst: req.user.nameFirst,
 	        		email: req.user.email
 	        	}, 
 	        	{ httpOnly: false });
@@ -65,7 +67,9 @@ router.post('/local/token', (req, res, next) => {
 				res.cookie(
 		        	'loggedInUser',
 		        	{
-		        		user: results[0].nameLast+', '+results[0].nameFirst,
+		        		_id: results[0]._id,
+		        		nameLast: results[0].nameLast,
+		        		nameFirst: results[0].nameFirst,
 		        		email: results[0].email
 		        	}, 
 		        	{ httpOnly: false }
@@ -75,7 +79,7 @@ router.post('/local/token', (req, res, next) => {
 		        	token, 
 		        	{ httpOnly: true }
 		        	);
-				res.headers['Authorization'] = 'Bearer '+token
+				res.set('Authorization', 'Bearer '+token)
 				res.json({ token: token, user: req.user })
 			}
 			else if(results.length > 0) {

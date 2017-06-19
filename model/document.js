@@ -85,12 +85,13 @@ module.exports = class Document {
 			.updateOne(doc.toObject())
 		return results;
 	}
-	static async read({ query={}, collection, pageSize=10, pageNum=1 } = {}) {
+	static async read({ query={}, collection, pageSize=10, pageNum=1, skipOnPage=0 } = {}) {
 		var results = await mongoUtil.getDB()
 			.collection(collection)
 			.find(query)
 			.skip(parseInt(pageSize) * (parseInt(pageNum) - 1))
 			.limit(parseInt(pageSize))
+			.skip(skipOnPage)
 			.toArray();
 		return results;
 	}

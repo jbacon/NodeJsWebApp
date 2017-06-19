@@ -2,11 +2,17 @@ doctype html
 html
 	head
 		title= title
-		script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js' type='text/javascript')
-		// Interactive Layer - JQuery DOM manipulation
-		script(src='/javascripts/global.js' type='text/javascript')
-		// Presentation Layer - Component HTML (via pug generated client JS functions)
-		script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
+		script(src='jspm_packages/system.js')
+		script(src='config.js')
+		//- script(src='javascripts/global.js')
+		script(src='javascripts/views/pug-functions-auto-generated.js')
+		script System.import('javascripts/globalVanilla.js');
+		//- script System.import('javascripts/views/pug-functions-auto-generated.js');
+		//- script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js' type='text/javascript')
+		//- // Interactive Layer - JQuery DOM manipulation
+		//- script(src='/javascripts/global.js' type='text/javascript')
+		//- // Presentation Layer - Component HTML (via pug generated client JS functions)
+		//- script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
 		// CSS
 		link(rel='stylesheet', href='/stylesheets/layout.css')
 		link(rel='stylesheet', href='/stylesheets/login.css')
@@ -20,10 +26,10 @@ html
 		header#site-header
 			h1#site-title Portfolio of Josh Bacon
 			nav#site-nav-bar
-				a.greeting(style='display:none') Hello, John Doe!
-				a.register(href='#register-modal-box--open') Register
-				a.logout(style='display:none') Logout
-				a.login(href='#login-modal-box--open') Login
+				a#greeting.hidden Hello, John Doe!
+				a#register(href='#register-modal-box--open') Register
+				a#logout.hidden Logout
+				a#login(href='#login-modal-box--open') Login
 		main
 			nav#main-menu
 				block menu
@@ -42,7 +48,8 @@ html
 						footer
 							div.replies-toggle Show Replies
 							div.replies
-							form.create(action='')
+							div.reply-toggle.hidden Reply
+							form.create.hidden(action='')
 								input.article-id(name='articleID' type='hidden' value='59344c18e987af001c119f93')
 								input.parent-comment-id(name='parentCommentID' type='hidden')
 								input.text(name='text' type='text' placeholder='Text...')

@@ -1,4 +1,9 @@
-$(document).ready(function() {
+import $ from 'jquery'
+import Cookie from 'cookie'
+
+$(document).ready(function() { // Page Load and/or Referesh
+	// Confgure U.I. based on Cookies set... (Single Page Applciation)
+	refreshAllowedFields.call(this)
 	$('#comments').on('click', '.replies-toggle', function() {
 		if($(this).text() == "Hide Replies") {
 			$(this).text('Show Replies');
@@ -11,8 +16,8 @@ $(document).ready(function() {
 				$.ajax({
 					context: this,
 					type: 'GET',
-					data: {	
-						query: {	
+					data: {
+						query: {
 							articleID: $('#article-header')
 								.data("article-id") || null, 
 							parentCommentID: $(this)
@@ -20,17 +25,18 @@ $(document).ready(function() {
 								.parent()
 								.data("id") || null
 							},			
-						pageSize: 10, 
-						pageNum: 1 
+						pageSize: 10,
+						pageNum: 1
 					},
 					url: '/comments/read',
 					dataType: 'JSON'
 				}).done(function(response) {
-					commentsHtml = ''
+					var commentsHtml = ''
 					$.each(response.data, function(i, comment) {
 						commentsHtml += generatehtmlforcomment(comment)
 					});
 					$(this).siblings(".replies").html(commentsHtml);
+					// refreshAllowedFields.call(this)
 				}).fail(function(response) {
 					alert('Error getting comments. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
 				});
@@ -133,6 +139,7 @@ $(document).ready(function() {
 			$(this)
 				.siblings('.reply-toggle')
 				.trigger('click');
+			// refreshAllowedFields.call(this)
 		}).fail(function(response) {
 			alert('Error creating comment. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
 		});
@@ -145,12 +152,8 @@ $(document).ready(function() {
 			data: $(this).serialize(),
 			url: '/auth/local/token'
 		}).done(function(response) {
-			$('a.logout').show();
-			$('a.greeting').html('Hello, '+document.cookie('loggedInUser').nameFirst+' '+document.cookie('loggedInUser').nameLast);
-			$('a.greeting').show();
-			$('a.login').hide();
-			$('a.register').hide();
-			$('#login-modal-box--close').click();
+			refreshAllowedFields.call(this)
+			$('#login-modal-box--close')[0].click();
 			alert('Login Succesful!')
 		}).fail(function(response) {
 			alert('Login failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
@@ -164,7 +167,7 @@ $(document).ready(function() {
 			data: $(this).serialize(),
 			url: '/auth/local/register'
 		}).done(function(response) {
-			$('#register-modal-box--close').click();
+			$('#register-modal-box--close')[0].click();
 			alert('Registeration Succesful! Try logging in..')
 		}).fail(function(response) {
 			alert('Registeration failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
@@ -176,14 +179,62 @@ $(document).ready(function() {
 			type: 'POST',
 			url: '/auth/local/logout'
 		}).done(function(response) {
-			$('a.logout').hide();
-			$('a.greeting').html('')
-			$('a.greeting').hide();
-			$('a.login').show();
-			$('a.register').show();
+			refreshAllowedFields.call(this)
 			alert('Logout Succesful!')
 		}).fail(function(response) {
 			alert('Logout failed. '+response.statusText+' - '+response.status+'. '+response.responseJSON.message)
 		});
 	});
 });
+
+var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+            // element added to DOM
+            var hasClass = [].some.call(mutation.addedNodes, function(el) {
+                return el.classList.contains('MyClass')
+            });
+            if (hasClass) {
+                // element has class `MyClass`
+
+                console.log('element ".MyClass" added');
+            }
+        }
+    });
+});
+observer.observe(document.body, 
+	{
+	    attributes: true,
+	    childList: true,
+	    characterData: true
+	}
+);
+
+function refreshAllowedFields() {
+	var cookie = Cookie.parse(document.cookie);
+	if(cookie.loggedInUser) {
+		var user = JSON.parse(cookie.loggedInUser.slice(2,cookie.loggedInUser.length))
+		$('a.greeting').html('Hello, '+user.nameFirst+' '+user.nameLast);
+		$('a.greeting').show();
+		$('a.login').hide();
+		$('a.logout').show();
+		$('a.register').hide();
+		$('#comments').find('.reply-toggle').show()
+		$('#comments').find('.delete').show()
+		$('#comments').find('.create').show()
+		$('#comments').find('.up-vote').show()
+		$('#comments').find('.down-vote').show()
+	}
+	else {
+		$('a.greeting').html('');
+		$('a.greeting').hide();
+		$('a.login').show();
+		$('a.logout').hide();
+		$('a.register').show();
+		$('#comments').find('.reply-toggle').hide()
+		$('#comments').find('.delete').hide()
+		$('#comments').find('.create').hide()
+		$('#comments').find('.up-vote').hide()
+		$('#comments').find('.down-vote').hide()
+	}
+}

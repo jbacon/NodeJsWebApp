@@ -117,7 +117,7 @@ module.exports = class Comment extends Document {
 		})
 		return results
 	}
-	static async read({ query={}, pageSize=10, pageNum=1 } = {}) {
+	static async read({ query={}, pageSize=10, pageNum=1, skipOnPage=0 } = {}) {
 		/* Build simple query.  */
 		if(mongodb.ObjectID.isValid(query.articleID))
 			query.articleID = new mongodb.ObjectID(query.articleID);
