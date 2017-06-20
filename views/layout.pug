@@ -22,7 +22,7 @@ html
 		link(rel='stylesheet', href='/stylesheets/roles.css')
 		link(rel='stylesheet', href='/stylesheets/accounts.css')
 		link(rel='stylesheet', href='/stylesheets/modal-window.css')
-	body
+	body.hidden
 		header#site-header
 			h1#site-title Portfolio of Josh Bacon
 			nav#site-nav-bar
@@ -47,7 +47,9 @@ html
 						h1 Comments:
 						footer
 							div.replies-toggle Show Replies
-							div.replies
+							div.load-newer.hidden Load New...
+							div.replies.hidden
+							div.load-older.hidden Load More...
 							div.reply-toggle.hidden Reply
 							form.create.hidden(action='')
 								input.article-id(name='articleID' type='hidden' value='59344c18e987af001c119f93')

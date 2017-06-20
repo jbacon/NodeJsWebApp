@@ -117,23 +117,46 @@ module.exports = class Comment extends Document {
 		})
 		return results
 	}
-	static async read({ query={}, pageSize=10, pageNum=1, skipOnPage=0 } = {}) {
-		/* Build simple query.  */
-		if(mongodb.ObjectID.isValid(query.articleID))
-			query.articleID = new mongodb.ObjectID(query.articleID);
+	// Supports pagination via either skip/limit or find/limit (https://scalegrid.io/blog/fast-paging-with-mongodb/)
+	static async read({ articleID=undefined, parentCommentID=undefined, startID=undefined, pageSize=10, sortOrder=-1/*Ascending*/, pageNum=1, skipOnPage=0 } = {}) {
+		var match = {}
+		if(articleID && mongodb.ObjectID.isValid(articleID))
+			match.articleID = mongodb.ObjectID(articleID);
 		else
-			query.articleID = null;
-		if(mongodb.ObjectID.isValid(query.parentCommentID))
-			query.parentCommentID = new mongodb.ObjectID(query.parentCommentID);
-		else 
-			query.parentCommentID = null;
-		var results = await super.read({
-			query: query,
-			collection: Comment.COLLECTION_NAME,
-			pageSize: pageSize,
-			pageNum: pageNum
-		});
-		return results
+			match.articleID = null;
+		if(parentCommentID && mongodb.ObjectID.isValid(parentCommentID))
+			match.parentCommentID = mongodb.ObjectID(parentCommentID);
+		else
+			match.parentCommentID = null;
+		if(startID && mongodb.ObjectID.isValid(startID)){
+			if(sortOrder === -1) //Descending
+				match._id = { $lt: mongodb.ObjectID(startID) };
+			else if(sortOrder === 1) //Ascending
+				match._id = { $gt: mongodb.ObjectID(startID) };
+		}
+		else{
+			if(sortOrder === -1) //Descending
+				match._id = { $lt: mongodb.ObjectID() };
+			else if(sortOrder === 1) //Ascending
+				match._id = { $gt: mongodb.ObjectID() };
+		}
+		var results = await mongoUtil.getDB()
+			.collection(Comment.COLLECTION_NAME)
+			.aggregate([])
+			.match(match)
+			.sort({
+				_id: sortOrder
+			})
+			.skip(parseInt(pageSize) * (parseInt(pageNum) - 1))
+			.limit(parseInt(pageSize))
+			.lookup({
+				from: 'accounts',
+				localField: 'accountID',
+				foreignField: '_id',
+				as: 'lookup_account'
+			})
+			.toArray();
+		return results.slice(skipOnPage) //Skip On Page
 	}
 	static async update({ comment } = {}) {
 		if(!(comment instanceof Comment))

@@ -8,6 +8,7 @@ var express = require('express');
 router.post('/create', commonAuth.isAuthenticated, function(req, res, next) {
 	try {
 		var comment = new Comment(req.body)
+		comment.accountID = new mongodb.ObjectID(req.user._id)
 		Comment.create({ comment: comment })
 			.then((results) => {
 				res.json({ data: results.ops[0] });

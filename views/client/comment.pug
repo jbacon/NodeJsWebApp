@@ -1,15 +1,15 @@
-article.comment(data-id=_id data-account-id=comment.accountID data-article-id=comment.articleID data-parent-comment-id=comment.parentCommentID)
+article.comment(data-id=comment._id data-account-id=comment.accountID data-article-id=comment.articleID data-parent-comment-id=comment.parentCommentID)
 	p= comment.text
 	footer
 		span.up-vote-count= comment.upVoteCount
 		span.up-vote Up
 		span.down-vote-count= comment.downVoteCount
 		span.down-vote Down
-		span.delete Delete
 		span.delete.hidden Delete
 		div.replies-toggle Show Replies
+		div.load-newer.hidden Load New...
 		div.replies.hidden
-		div.load-more.hidden Load More...
+		div.load-older.hidden Load Older...
 		div.reply-toggle.hidden Reply
 		form.create.hidden(action='')
 			input.article-id(name='articleID' type='hidden' value=comment.articleID)

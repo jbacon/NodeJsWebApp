@@ -23,22 +23,27 @@ exports.extractJwt = function(req) {
     return token;
 };
 exports.isAuthenticated = function(req, res, next) {
-  if(exports.extractJwt(req)) { 
-    // JWT based authen check
-    try {
-      // Custom Authentication Callback for PassportJS
+  var jwtToken = exports.extractJwt(req)
+  if(jwtToken) { // If JWT found... 
+    try { // Try to authenticate...
       passport.authenticate(
         'local-jwt',
         (err, user, info) => {
           if (err) { 
+            res.clearCookie('loggedInUser');
+            res.clearCookie('JWT');
             next(err); 
           }
           else if (!user) {
+            res.clearCookie('loggedInUser');
+            res.clearCookie('JWT');
             next(info); 
           }
           else {
             req.logIn(user, (err) => {
               if (err) { 
+                res.clearCookie('loggedInUser');
+                res.clearCookie('JWT');
                 next(err); 
               }
               else {
@@ -49,13 +54,18 @@ exports.isAuthenticated = function(req, res, next) {
         })(req, res, next)
     }
     catch(e) {
+      res.clearCookie('loggedInUser');
+      res.clearCookie('JWT');
       next(err)
     }
   }
-  else { // Implies Session based Authentication
-    if(req.isAuthenticated()) 
+  else { // else Session...
+    if(req.isAuthenticated()) {
       next();
+    }
     else {
+      res.clearCookie('loggedInUser');
+      res.clearCookie('JWT');
       var error = new Error('Login required, you are not authenticated..')
       error.status = 401
       next(error)
@@ -104,8 +114,6 @@ passport.use('local-jwt', new JwtStrategy(
     jwtFromRequest: exports.extractJwt
   },
   (req, jwt_payload, next) => {
-    var user = jwt_payload;
-    next(null, user)
     // Technically not necessary to verify credentials here.
     // If this function is reach it is already implied that
     // the user is authenticated via a valid signed token found in the HttpOnly cookies and/or auth header.
@@ -113,6 +121,9 @@ passport.use('local-jwt', new JwtStrategy(
     // it would sub-optiminal to validate user credentials against database on each request, 
     // which contrasts other session based strategies that
     // only validate credentials on login requests (not all requests).
+    var user = jwt_payload;
+    // Refresh jwt...
+    next(null, user)
   })
 );
 passport.serializeUser(function(account, done) {
