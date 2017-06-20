@@ -73,5 +73,23 @@ router.post('/incrementDownVoteCount', function(req, res, next) {
 			next(err)
 		})
 });
+router.post('/flag', function(req, res, next) {
+	Comment.flag(req.body)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
+});
+router.post('/remove', function(req, res, next) {
+	Comment.remove(req.body)
+		.then((results) => {
+			res.json({ data: results });
+		})
+		.catch((err) => {
+			next(err)
+		})
+});
 
 module.exports = router;

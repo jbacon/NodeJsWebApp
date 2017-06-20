@@ -14,7 +14,6 @@ var routesArticles = require('./routes/articles');
 var routesComments = require('./routes/comments');
 var routesAuth = require('./routes/auth');
 var routesAccounts = require('./routes/accounts');
-var routesRoles = require('./routes/roles');
 // Commons
 var commonMongo = require('./common/mongoUtil'); 
 var markdownUtil = require('./common/markdownUtil'); 
@@ -88,7 +87,6 @@ app.use('/comments', routesComments);
 app.use('/articles', routesArticles);
 app.use('/auth', routesAuth);
 app.use('/accounts', routesAccounts);
-app.use('/roles', routesRoles);
 
 // ROUTER LOGGING - AFTER routers BEFORE handlers
 app.use(expressWinston.errorLogger({

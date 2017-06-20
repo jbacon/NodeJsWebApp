@@ -17,6 +17,8 @@ module.exports = class Comment extends Document {
 		this.parentCommentID = comment.parentCommentID
 		this.upVoteCount = comment.upVoteCount
 		this.downVoteCount = comment.downVoteCount
+		this.flags = comment.flags
+		this.removed = comment.removed
 	}
 	get accountID() {
 		return this._accountID;
@@ -99,6 +101,28 @@ module.exports = class Comment extends Document {
 		else
 			throw new Error('Invalid entry for... newDownVoteCount: '+newDownVoteCount)
 	}
+	get flags() {
+		return this._flags;
+	}
+	set flags(newFlags) {
+		if(newFlags === null || newFlags === undefined || newFlags === '')
+			this._flags = 0;
+		else if(typeof(newFlags) === 'number')
+			this._flags = newFlags;
+		else
+			throw new Error('Invalid entry for... newFlags: '+newFlags)
+	}
+	get removed() {
+		return this._removed;
+	}
+	set removed(newRemoved) {
+		if(newRemoved === null || newRemoved === undefined || newRemoved === '')
+			this._removed = false;
+		else if(typeof(newRemoved) === 'boolean')
+			this._removed = newRemoved;
+		else
+			throw new Error('Invalid entry for... newRemoved: '+newRemoved)
+	}
 	toObject() {
 		var obj = super.toObject()
 		obj.accountID = this.accountID;
@@ -107,6 +131,8 @@ module.exports = class Comment extends Document {
 		obj.parentCommentID = this.parentCommentID;
 		obj.upVoteCount = this.upVoteCount;
 		obj.downVoteCount = this.downVoteCount;
+		obj.flags = this.flags;
+		obj.removed = this.removed;
 		return obj
 	}
 	static async create({ comment } = {}) {
@@ -198,6 +224,32 @@ module.exports = class Comment extends Document {
 					$inc: {
 						upVoteCount: 1
 					}
+				}
+			);
+	}
+	static async flag({ _id } = {}) {
+		var objectID = new mongodb.ObjectID(_id);
+		return await mongoUtil.getDB()
+			.collection(Comment.COLLECTION_NAME).updateOne(
+				{
+					_id: objectID 
+				},
+				{
+					$inc: {
+						flags: 1
+					}
+				}
+			);
+	}
+	static async remove({ _id } = {}) {
+		var objectID = new mongodb.ObjectID(_id);
+		return await mongoUtil.getDB()
+			.collection(Comment.COLLECTION_NAME).updateOne(
+				{
+					_id: objectID
+				},
+				{
+					$set: { removed: true }
 				}
 			);
 	}

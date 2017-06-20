@@ -1,10 +1,10 @@
-section.comments {
+article.comments {
 	margin: 0px 0px 0px 20px;
 }
-section.comments > h1 {
+article.comments > h1 {
 	margin: 0px 0px 0px 20px;
 }
-section.comments > footer {
+article.comments > footer {
 	margin: 0px 0px 0px 20px;
 }
 article.comment {
@@ -31,13 +31,19 @@ article.comment > footer > span.down-vote-count {
 article.comment > footer > span.down-vote {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.replies-toggle {
+article.comment > footer > div.replies-toggle {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.replies {
+article.comment > footer > div.load-newer {
+	margin: 0px 0px 0px 20px;
+}
+article.comment > footer > div.replies {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > span.reply-toggle {
+article.comment > footer > div.load-older {
+	margin: 0px 0px 0px 20px;
+}
+article.comment > footer > div.reply-toggle {
 	margin: 0px 0px 0px 0px;
 }
 article.comment > footer > div.create {

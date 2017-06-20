@@ -25,6 +25,12 @@ module.exports = class Account extends Document{
 		else
 			throw new Error('Failed to construct account. Invalid entry for... newEmail: '+newEmail)
 	}
+	get isAdmin() {
+		if(this._email === 'jbacon@zagmail.gonzaga.edu')
+			return true
+		else
+			return false
+	}
 	get nameFirst() {
 		return this._nameFirst;
 	}
@@ -56,6 +62,7 @@ module.exports = class Account extends Document{
 	toObject() {
 		var obj = super.toObject()
 		obj.email = this.email;
+		obj.isAdmin = this.isAdmin;
 		obj.nameFirst = this.nameFirst;
 		obj.nameLast = this.nameLast;
 		obj.passwordHashAndSalt = this.passwordHashAndSalt;
