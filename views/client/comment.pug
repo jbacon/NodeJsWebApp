@@ -1,20 +1,21 @@
+- var commentDisabled = comment.removed || comment.flags > 5
 article.comment(data-id=comment._id data-account-id=comment.accountID data-article-id=comment.articleID data-parent-comment-id=comment.parentCommentID)
-	p= (comment.removed || comment.flags > 5) ? '~~Comment has been Removed~~' : comment.text
+	p= (comment.removed || commentDisabled) ? '~~Comment has been Removed~~' : comment.text
 	footer
 		div
-			span.up-vote-count= comment.upVoteCount
-			span.up-vote Up
-			span.down-vote-count= comment.downVoteCount
-			span.down-vote Down
+			span.up-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.upVoteCount
+			span.up-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Up
+			span.down-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.downVoteCount
+			span.down-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Down
 		div
-			span.delete(class=authorizedDelete ? '' : 'hidden') Delete
-			span.remove(class=authorizedRemove ? '' : 'hidden') Remove
-			span.flag Flag
+			span.delete(class=(authorizedDelete && !commentDisabled) ? '' : 'hidden') Delete
+			span.remove(class=(authorizedRemove && !commentDisabled) ? '' : 'hidden') Remove
+			span.flag(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Flag
 		div.replies-toggle Show Replies
 		div.load-newer.hidden Load New...
 		div.replies.hidden
 		div.load-older.hidden Load Older...
-		div.reply-toggle(class=authorizedCreate ? '' : 'hidden') Reply
+		div.reply-toggle(class=(authorizedCreate && !commentDisabled) ? '' : 'hidden') Reply
 		form.create.hidden(action='')
 			input.article-id(name='articleID' type='hidden' value=comment.articleID)
 			input.parent-comment-id(name='parentCommentID' type='hidden' value=comment._id)

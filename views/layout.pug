@@ -13,7 +13,7 @@ html
 		//- script(src='/javascripts/global.js' type='text/javascript')
 		//- // Presentation Layer - Component HTML (via pug generated client JS functions)
 		//- script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
-		// CSS
+		//- CSS
 		link(rel='stylesheet', href='/stylesheets/layout.css')
 		link(rel='stylesheet', href='/stylesheets/login.css')
 		link(rel='stylesheet', href='/stylesheets/register.css')
@@ -42,19 +42,7 @@ html
 						span Share
 						span Print
 						span Contact
-					article#comments.comment
-						h1 Comments:
-						footer
-							div.replies-toggle Show Replies
-							div.load-newer.hidden Load New...
-							div.replies.hidden
-							div.load-older.hidden Load More...
-							div.reply-toggle.hidden Reply
-							form.create.hidden(action='')
-								input.article-id(name='articleID' type='hidden' value='59344c18e987af001c119f93')
-								input.parent-comment-id(name='parentCommentID' type='hidden')
-								input.text(name='text' type='text' placeholder='Text...')
-								input.submit(type='submit')
+					article#comments
 		footer#site-footer
 			div#login-modal-box--open.modal-box
 				a.modal-box__overlay(href='#')

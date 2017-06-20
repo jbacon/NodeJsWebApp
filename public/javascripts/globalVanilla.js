@@ -45,7 +45,7 @@ const IDENTITY_ACCESS_MANAGMENT_LIST = {
 
 // Prevents flickering of unstyled U.I. (where styling is programmatic)
 document.body.classList.remove('hidden')
-
+// Reveal User specific elements
 var user = getCurrentUser()
 if(user) {
 	var greetingElement = document.getElementById('greeting')
@@ -57,17 +57,38 @@ if(user) {
 }
 
 const commentsElement = document.getElementById('comments')
+// Generate Comment section (starts with dummy comment)
+commentsElement.innerHTML = generatehtmlforcomment({
+	comment: {
+		_id: null,
+		text: 'Comment Section:',
+		accountID: null,
+		articleID: document.getElementById('article-header').dataset.articleId,
+		parentCommentID: null
+	},
+	authorizedDelete: false,
+	authorizedCreate: false,
+	authorizedRemove: false,
+	authorizedFlag: false,
+	authorizedVote: false
+});
 // Listen for Click events on Comments section
 commentsElement.addEventListener('click', function(event) {
 	const commentElement = event.target.closest('.comment') //Get comment element clicked...
 	// Toggles visibility of child Comments (and associated functionality)
 	// If no children exist will query for 1st page of child comments.
 	if(event.target.classList.contains('replies-toggle')) {
-		var loadNew = commentElement.querySelector('.load-newer');
-		var replies = commentElement.querySelector('.replies');
-		var loadOld = commentElement.querySelector('.load-older');
-		var replyToggle = commentElement.querySelector('.reply-toggle');
-		var create = commentElement.querySelector('.create');
+		// comment -> p -> footer -> first
+		var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling
+		var replies = loadNew.nextElementSibling
+		var loadOld = replies.nextElementSibling
+		var replyToggle = loadOld.nextElementSibling
+		var create = replyToggle.nextElementSibling
+		// var loadNew = commentElement.
+		// var replies = commentElement.querySelector('.replies:first-child');
+		// var loadOld = commentElement.querySelector('.load-older:last-child');
+		// var replyToggle = commentElement.querySelector('.reply-toggle:last-child');
+		// var create = commentElement.querySelector('.create:last-child');
 		if(event.target.textContent == 'Hide Replies') {
 			event.target.textContent = 'Show Replies';
 			loadNew.classList.add('hidden')
@@ -93,7 +114,8 @@ commentsElement.addEventListener('click', function(event) {
 	}
 	// Toggles Visibility of Create new Comment Form.
 	if(event.target.classList.contains('reply-toggle')) {
-		var create = commentElement.querySelector('.create');
+		// var create = commentElement.querySelector('footer > .create');
+		var create = commentElement.lastElementChild.lastElementChild
 		if(event.target.innerHTML === 'Reply') {
 			event.target.innerHTML = 'Cancel'
 			create.classList.remove('hidden')
@@ -207,15 +229,29 @@ commentsElement.addEventListener('click', function(event) {
 });
 // Listen for Submit events on Comments sections (create comment form)
 commentsElement.addEventListener('submit', function(event) {
+	const commentElement = event.target.closest('.comment')
 	if(event.target.classList.contains('create')) {
+		var repliesToggle = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
+		var loadNew = repliesToggle.nextElementSibling
+		var replies = loadNew.nextElementSibling
+		var loadOld = replies.nextElementSibling
+		var replyToggle = loadOld.nextElementSibling
+		var create = replyToggle.nextElementSibling
 		event.preventDefault();
 		const client = new XMLHttpRequest();
 		client.onreadystatechange = function() {
 			if (this.readyState === XMLHttpRequest.DONE) {
 				const response = JSON.parse(this.response);
 				if(this.status === 200) {
-					// Programmatically click load latest comments...
-					event.target.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.click();
+					// Programmatically click load latest comments... if initial comment load exists
+					// Otherwise programmatically click show comments...
+					if(replies.childNodes.length === 0){
+						repliesToggle.click();
+						repliesToggle.click();
+					}
+					else 
+						loadNew.click();
+
 				}
 				else {
 					handleServerErrorResponse('Create Comment Failed.', response)
@@ -291,7 +327,6 @@ document.getElementById('logout').addEventListener('click', function(event) {
 	client.open('POST', '/auth/local/logout');
 	client.send();
 })
-
 function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 	var repliesElement = parentCommentElement.querySelector('.replies')
 	const query = {}
@@ -336,7 +371,9 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 						comment: comments[i],
 						authorizedDelete: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.DELETE_OWN[getVisitorType()],
 						authorizedCreate: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()],
-						authorizedRemove: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.REMOVE_OWN[getVisitorType()] && comments[i].accountID == getCurrentUser()._id
+						authorizedRemove: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.REMOVE_OWN[getVisitorType()] && comments[i].accountID == getCurrentUser()._id,
+						authorizedFlag: true,
+						authorizedVote: true
 					});
 					repliesElement.insertAdjacentHTML(insertMethod, commentHtml)
 				}
@@ -349,7 +386,6 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 	client.open('GET', '/comments/read?data='+encodedQuery);
 	client.send();
 }
-
 function getVisitorType() {
 	var user = getCookie('loggedInUser');
 	if(!user) {
