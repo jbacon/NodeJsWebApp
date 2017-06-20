@@ -7,7 +7,6 @@ article.comment(data-id=comment._id data-account-id=comment.accountID data-artic
 			span.up-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Up
 			span.down-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.downVoteCount
 			span.down-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Down
-		div
 			span.delete(class=(authorizedDelete && !commentDisabled) ? '' : 'hidden') Delete
 			span.remove(class=(authorizedRemove && !commentDisabled) ? '' : 'hidden') Remove
 			span.flag(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Flag
@@ -15,7 +14,7 @@ article.comment(data-id=comment._id data-account-id=comment.accountID data-artic
 		div.load-newer.hidden Load New...
 		div.replies.hidden
 		div.load-older.hidden Load Older...
-		div.reply-toggle(class=(authorizedCreate && !commentDisabled) ? '' : 'hidden') Reply
+		div.reply-toggle.hidden Reply
 		form.create.hidden(action='')
 			input.article-id(name='articleID' type='hidden' value=comment.articleID)
 			input.parent-comment-id(name='parentCommentID' type='hidden' value=comment._id)

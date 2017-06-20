@@ -46,15 +46,15 @@ const IDENTITY_ACCESS_MANAGMENT_LIST = {
 // Prevents flickering of unstyled U.I. (where styling is programmatic)
 document.body.classList.remove('hidden')
 // Reveal User specific elements
-var user = getCurrentUser()
-if(user) {
-	var greetingElement = document.getElementById('greeting')
-	greetingElement.classList.remove('hidden')
-	greetingElement.innerHTML = 'Hello, '+user.nameFirst+' '+user.nameLast
-	document.getElementById('logout').classList.remove('hidden')
-	document.getElementById('register').classList.add('hidden')
-	document.getElementById('login').classList.add('hidden')
-}
+// var user = getCurrentUser()
+// if(user) {
+// 	var greetingElement = document.getElementById('greeting')
+// 	greetingElement.classList.remove('hidden')
+// 	greetingElement.innerHTML = 'Hello, '+user.nameFirst+' '+user.nameLast
+// 	document.getElementById('logout').classList.remove('hidden')
+// 	document.getElementById('register').classList.add('hidden')
+// 	document.getElementById('login').classList.add('hidden')
+// }
 
 const commentsElement = document.getElementById('comments')
 // Generate Comment section (starts with dummy comment)
@@ -79,7 +79,7 @@ commentsElement.addEventListener('click', function(event) {
 	// If no children exist will query for 1st page of child comments.
 	if(event.target.classList.contains('replies-toggle')) {
 		// comment -> p -> footer -> first
-		var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling
+		var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
 		var replies = loadNew.nextElementSibling
 		var loadOld = replies.nextElementSibling
 		var replyToggle = loadOld.nextElementSibling
@@ -231,7 +231,7 @@ commentsElement.addEventListener('click', function(event) {
 commentsElement.addEventListener('submit', function(event) {
 	const commentElement = event.target.closest('.comment')
 	if(event.target.classList.contains('create')) {
-		var repliesToggle = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
+		var repliesToggle = commentElement.lastElementChild.firstElementChild.nextElementSibling
 		var loadNew = repliesToggle.nextElementSibling
 		var replies = loadNew.nextElementSibling
 		var loadOld = replies.nextElementSibling

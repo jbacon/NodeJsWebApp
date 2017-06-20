@@ -25,10 +25,12 @@ html
 		header#site-header
 			h1#site-title Portfolio of Josh Bacon
 			nav#site-nav-bar
-				a#greeting.hidden Hello, John Doe!
-				a#register(href='#register-modal-box--open') Register
-				a#logout.hidden Logout
-				a#login(href='#login-modal-box--open') Login
+				if user
+					a#logout Logout
+					a#greeting= 'Hello, '+user.nameFirst+' '+user.nameLast
+				else
+					a#registerRegister(href='#register-modal-box--open') Register
+					a#login(href='#login-modal-box--open') Login
 		main
 			nav#main-menu
 				block menu
