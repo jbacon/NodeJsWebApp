@@ -14,20 +14,15 @@ const IDENTITY_ACCESS_MANAGMENT_LIST = {
 	// Service Level
 	COMMENTS: {
 		// Access Level
+		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
 		VOTE: { ADMIN: true, USER: true, ANONYMOUS: false },
 		CREATE: { ADMIN: true, USER: true, ANONYMOUS: false },
-		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
-		UPDATE_OWN: { ADMIN: true, USER: true, ANONYMOUS: false },
-		UPDATE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false },
-		DELETE_OWN: { ADMIN: true, USER: false, ANONYMOUS: false },
-		DELETE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false },
+		DELETE: { ADMIN: true, USER: false, ANONYMOUS: false },
 		REMOVE_OWN: { ADMIN: true, USER: true, ANONYMOUS: false },
 		REMOVE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false },
 		FLAG: { ADMIN: true, USER: true, ANONYMOUS: true }
 	},
 	ARTICLES: {
-		UP_VOTE: { ADMIN: true, USER: true, ANONYMOUS: false },
-		DOWN_VOTE: { ADMIN: true, USER: true, ANONYMOUS: false },
 		CREATE: { ADMIN: true, USER: false, ANONYMOUS: false },
 		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
 		UPDATE: { ADMIN: true, USER: false, ANONYMOUS: false },
@@ -45,16 +40,6 @@ const IDENTITY_ACCESS_MANAGMENT_LIST = {
 
 // Prevents flickering of unstyled U.I. (where styling is programmatic)
 document.body.classList.remove('hidden')
-// Reveal User specific elements
-// var user = getCurrentUser()
-// if(user) {
-// 	var greetingElement = document.getElementById('greeting')
-// 	greetingElement.classList.remove('hidden')
-// 	greetingElement.innerHTML = 'Hello, '+user.nameFirst+' '+user.nameLast
-// 	document.getElementById('logout').classList.remove('hidden')
-// 	document.getElementById('register').classList.add('hidden')
-// 	document.getElementById('login').classList.add('hidden')
-// }
 
 const commentsElement = document.getElementById('comments')
 // Generate Comment section (starts with dummy comment)
@@ -84,7 +69,8 @@ commentsElement.addEventListener('click', function(event) {
 		var loadOld = replies.nextElementSibling
 		var replyToggle = loadOld.nextElementSibling
 		var create = replyToggle.nextElementSibling
-		// var loadNew = commentElement.
+		// Does not work.. depth-first-search
+		// var loadNew = commentElement.querySelector('.load-newer:first-child');
 		// var replies = commentElement.querySelector('.replies:first-child');
 		// var loadOld = commentElement.querySelector('.load-older:last-child');
 		// var replyToggle = commentElement.querySelector('.reply-toggle:last-child');
@@ -104,7 +90,7 @@ commentsElement.addEventListener('click', function(event) {
 			loadNew.classList.remove('hidden')
 			replies.classList.remove('hidden')
 			loadOld.classList.remove('hidden')
-			if(IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()]) { // If allowed to unhide reply
+			if(IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()]) {
 				replyToggle.classList.remove('hidden')
 			}
 			if(replies.childNodes.length === 0) { //Try loading comments if none exit
@@ -372,8 +358,8 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 						authorizedDelete: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.DELETE_OWN[getVisitorType()],
 						authorizedCreate: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()],
 						authorizedRemove: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.REMOVE_OWN[getVisitorType()] && comments[i].accountID == getCurrentUser()._id,
-						authorizedFlag: true,
-						authorizedVote: true
+						authorizedFlag: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.FLAG[getVisitorType()],
+						authorizedVote: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.VOTE[getVisitorType()]
 					});
 					repliesElement.insertAdjacentHTML(insertMethod, commentHtml)
 				}
