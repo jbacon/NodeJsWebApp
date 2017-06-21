@@ -1,8 +1,8 @@
-# [NodeJs](https://nodejs.org/en/) [ExpressJS](https://expressjs.com/) Web App
+# Personal Website/Blog: [NodeJs](https://nodejs.org/en/), [ExpressJS](https://expressjs.com/), & [VanillaJS](http://vanilla-js.com/) :)
 
 This is a web app built entirely by me, Josh Bacon, for the purpose of learning javascript, nodejs, expressjs, mongodb, docker, and front/back-end web development... Attempts to use Single-Page Application patterns.
 
-## Features to Implimenet
+## Features Implimentations:
 1. Comments Section like Reddit
 2. Markdown Articles (Blog Entries) backed in MongoDB
 	- Markdown Editor
@@ -23,3 +23,7 @@ This is a web app built entirely by me, Josh Bacon, for the purpose of learning 
 		- LinkedIn
 		- Email
 		- Google
+
+## Future Plans:
+- Host static Pages/Javascript on GitHub.io
+- Host Node.JS API Server / MongoDB on AWS w/ Public Endpoint
