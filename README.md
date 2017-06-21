@@ -1,37 +1,25 @@
-# [NodeJs](https://nodejs.org/en/) [ExpressJS](https://expressjs.com/) Web App for Learning Purposes
+# [NodeJs](https://nodejs.org/en/) [ExpressJS](https://expressjs.com/) Web App
 
-This is a web app built entirely by myself, Josh Bacon, for the purpose of learning javascript, nodejs, expressjs, mongodb, docker, and front-end web development (Jquery, Ajax, HTML, CSS, etc..). Attempts to use Single-Page Application principles.
+This is a web app built entirely by me, Josh Bacon, for the purpose of learning javascript, nodejs, expressjs, mongodb, docker, and front/back-end web development... Attempts to use Single-Page Application patterns.
 
-## Planned Features
-1. Comments (footer)
-	- Sub-Comments
-	- Children of Articles
-	- Add
-	- Remove
-	- Show/Hide
-	- Up/Down Vote
-2. Articles (main)
-	- Parent of Comments
-	- Add
-	- Remove
+## Features to Implimenet
+1. Comments Section like Reddit
+2. Markdown Articles (Blog Entries) backed in MongoDB
 	- Markdown Editor
-	- Pictures/Images
+	- Pictures/Images storage (via S3?)
+	- Pages to support editing/displaying/creating new article posts via MD
+4. User Accounts
+	- Registration/Login pages
+	- Facebook Authentication
+	- Google Authentication
+	- Local Authentication (backed in my MongoDB)
+	- Adminstrative Accounts
 3. About Me
 	- Static Content
-	- Links:
+	- Resume
+	- Social Profiles:
 		- GitHub
 		- DockerHub
 		- LinkedIn
 		- Email
-	- CSS
-	- JavaScript
-4. Security / Administration
-	- Login
-	- Authentication
-	- Authorization
-
-
-## Local Deploy Setps
-1. 
-2.
-3.
+		- Google
