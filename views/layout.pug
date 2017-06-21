@@ -23,14 +23,14 @@ html
 		link(rel='stylesheet', href='/stylesheets/modal-window.css')
 	body.hidden
 		header#site-header
-			h1#site-title Portfolio of Josh Bacon
+			h1#site-title= title
 			nav#site-nav-bar
 				if user
-					a#logout Logout
-					a#greeting= 'Hello, '+user.nameFirst+' '+user.nameLast
+					a#logout.clickable Logout
+					a#greeting.clickable= 'Hello, '+user.nameFirst+' '+user.nameLast
 				else
-					a#registerRegister(href='#register-modal-box--open') Register
-					a#login(href='#login-modal-box--open') Login
+					a#register.clickable(href='#register-modal-box--open') Register
+					a#login.clickable(href='#login-modal-box--open') Login
 		main
 			nav#main-menu
 				block menu
@@ -41,9 +41,9 @@ html
 					block content
 				footer#main-footer
 					section#actions
-						span Share
-						span Print
-						span Contact
+						span.clickable Share
+						span.clickable Print
+						span.clickable Contact
 					article#comments
 		footer#site-footer
 			div#login-modal-box--open.modal-box

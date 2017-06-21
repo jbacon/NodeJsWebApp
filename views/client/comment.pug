@@ -3,20 +3,20 @@ article.comment(data-id=comment._id data-account-id=comment.accountID data-artic
 	p= (comment.removed || commentDisabled) ? '~~Comment has been Removed~~' : comment.text
 	footer
 		div
+			span.replies-toggle.clickable Show Replies
 			span.up-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.upVoteCount
-			span.up-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Up
+			span.up-vote.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Up
 			span.down-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.downVoteCount
-			span.down-vote(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Down
-			span.delete(class=(authorizedDelete && !commentDisabled) ? '' : 'hidden') Delete
-			span.remove(class=(authorizedRemove && !commentDisabled) ? '' : 'hidden') Remove
-			span.flag(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Flag
-		div.replies-toggle Show Replies
-		div.load-newer.hidden Load New...
+			span.down-vote.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Down
+			span.delete.clickable(class=(authorizedDelete && !commentDisabled) ? '' : 'hidden') Delete
+			span.remove.clickable(class=(authorizedRemove && !commentDisabled) ? '' : 'hidden') Remove
+			span.flag.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Flag
+		div.load-newer.clickable.hidden Load New...
 		div.replies.hidden
-		div.load-older.hidden Load Older...
-		div.reply-toggle.hidden Reply
+		div.load-older.cwlickable.hidden Load Older...
+		div.reply-toggle.clickable.hidden Reply
 		form.create.hidden(action='')
 			input.article-id(name='articleID' type='hidden' value=comment.articleID)
 			input.parent-comment-id(name='parentCommentID' type='hidden' value=comment._id)
 			input.text(name='text' type='text' placeholder='Text...')
-			button.submit Submit
+			button.submit.clickable Submit

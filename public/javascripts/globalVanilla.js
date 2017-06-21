@@ -1,5 +1,7 @@
 import Cookie from 'cookie'
 
+const ADMIN_EMAIL = 'jbacon@zagmail.gonzaga.edu'
+
 const VISITOR_TYPE = {
 	ANONYMOUS: 'ANONYMOUS',
 	ADMIN: 'ADMIN',
@@ -11,9 +13,7 @@ const PAGE_SIZE=5
 // Level 2 - ACCESSES (unique to service... e.i. create_own)
 // Level 3 - ROLES (e.i. Anonymous, Admin, User)
 const IDENTITY_ACCESS_MANAGMENT_LIST = {
-	// Service Level
 	COMMENTS: {
-		// Access Level
 		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
 		VOTE: { ADMIN: true, USER: true, ANONYMOUS: false },
 		CREATE: { ADMIN: true, USER: true, ANONYMOUS: false },
@@ -64,17 +64,16 @@ commentsElement.addEventListener('click', function(event) {
 	// If no children exist will query for 1st page of child comments.
 	if(event.target.classList.contains('replies-toggle')) {
 		// comment -> p -> footer -> first
-		var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
-		var replies = loadNew.nextElementSibling
-		var loadOld = replies.nextElementSibling
-		var replyToggle = loadOld.nextElementSibling
-		var create = replyToggle.nextElementSibling
-		// Does not work.. depth-first-search
-		// var loadNew = commentElement.querySelector('.load-newer:first-child');
-		// var replies = commentElement.querySelector('.replies:first-child');
-		// var loadOld = commentElement.querySelector('.load-older:last-child');
-		// var replyToggle = commentElement.querySelector('.reply-toggle:last-child');
-		// var create = commentElement.querySelector('.create:last-child');
+		// var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
+		// var replies = loadNew.nextElementSibling
+		// var loadOld = replies.nextElementSibling
+		// var replyToggle = loadOld.nextElementSibling
+		// var create = replyToggle.nextElementSibling
+		var loadNew = commentElement.querySelector(':scope > footer > .load-newer');
+		var replies = commentElement.querySelector(':scope > footer > .replies');
+		var loadOld = commentElement.querySelector(':scope > footer > .load-older');
+		var replyToggle = commentElement.querySelector(':scope > footer > .reply-toggle');
+		var create = commentElement.querySelector(':scope > footer > .create');
 		if(event.target.textContent == 'Hide Replies') {
 			event.target.textContent = 'Show Replies';
 			loadNew.classList.add('hidden')
@@ -217,12 +216,12 @@ commentsElement.addEventListener('click', function(event) {
 commentsElement.addEventListener('submit', function(event) {
 	const commentElement = event.target.closest('.comment')
 	if(event.target.classList.contains('create')) {
-		var repliesToggle = commentElement.lastElementChild.firstElementChild.nextElementSibling
-		var loadNew = repliesToggle.nextElementSibling
-		var replies = loadNew.nextElementSibling
-		var loadOld = replies.nextElementSibling
-		var replyToggle = loadOld.nextElementSibling
-		var create = replyToggle.nextElementSibling
+		var repliesToggle = commentElement.querySelector(':scope > footer > div > .replies-toggle');
+		var loadNew = commentElement.querySelector(':scope > footer > .load-newer');
+		var replies = commentElement.querySelector(':scope > footer > .replies');
+		var loadOld = commentElement.querySelector(':scope > footer > .load-older');
+		var replyToggle = commentElement.querySelector(':scope > footer > .reply-toggle');
+		var create = commentElement.querySelector(':scope > footer > .create');
 		event.preventDefault();
 		const client = new XMLHttpRequest();
 		client.onreadystatechange = function() {
@@ -355,7 +354,7 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 				for(var i = 0; i < comments.length; i++) {
 					const commentHtml = generatehtmlforcomment({
 						comment: comments[i],
-						authorizedDelete: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.DELETE_OWN[getVisitorType()],
+						authorizedDelete: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.DELETE[getVisitorType()],
 						authorizedCreate: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()],
 						authorizedRemove: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.REMOVE_OWN[getVisitorType()] && comments[i].accountID == getCurrentUser()._id,
 						authorizedFlag: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.FLAG[getVisitorType()],
@@ -373,11 +372,11 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 	client.send();
 }
 function getVisitorType() {
-	var user = getCookie('loggedInUser');
+	var user = getCurrentUser()
 	if(!user) {
 		return VISITOR_TYPE.ANONYMOUS
 	}
-	else if(user.admin === true) {
+	else if(user.email === ADMIN_EMAIL) {
 		return VISITOR_TYPE.ADMIN
 	}
 	else {
