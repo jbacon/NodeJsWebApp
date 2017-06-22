@@ -22,6 +22,16 @@ exports.extractJwt = function(req) {
     }
     return token;
 };
+exports.isAdmin = function(req, res, next) {
+  if(req.user.email === 'jbacon@zagmail.gonzaga.edu') {
+    next()
+  }
+  else {
+      var error = new Error('Account requires Adminstrative Account..')
+      error.status = 401
+      next(error)
+  }
+}
 exports.isAuthenticated = function(req, res, next) {
   var jwtToken = exports.extractJwt(req)
   if(jwtToken) { // If JWT found... 
@@ -56,7 +66,7 @@ exports.isAuthenticated = function(req, res, next) {
     catch(e) {
       res.clearCookie('loggedInUser');
       res.clearCookie('JWT');
-      next(err)
+      next(e)
     }
   }
   else { // else Session...

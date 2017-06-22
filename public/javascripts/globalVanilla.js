@@ -2,135 +2,84 @@ import Cookie from 'cookie'
 
 const ADMIN_EMAIL = 'jbacon@zagmail.gonzaga.edu'
 
-const VISITOR_TYPE = {
-	ANONYMOUS: 'ANONYMOUS',
-	ADMIN: 'ADMIN',
-	USER: 'USER'
-}
 const PAGE_SIZE=5
-// IACL for U.I. PRESENTATION ONLY (data layer secured server side)
-// Level 1 - SERVICES (e.i. Comments API, Article API, )
-// Level 2 - ACCESSES (unique to service... e.i. create_own)
-// Level 3 - ROLES (e.i. Anonymous, Admin, User)
-const IDENTITY_ACCESS_MANAGMENT_LIST = {
-	COMMENTS: {
-		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
-		VOTE: { ADMIN: true, USER: true, ANONYMOUS: false },
-		CREATE: { ADMIN: true, USER: true, ANONYMOUS: false },
-		DELETE: { ADMIN: true, USER: false, ANONYMOUS: false },
-		REMOVE_OWN: { ADMIN: true, USER: true, ANONYMOUS: false },
-		REMOVE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false },
-		FLAG: { ADMIN: true, USER: true, ANONYMOUS: true }
-	},
-	ARTICLES: {
-		CREATE: { ADMIN: true, USER: false, ANONYMOUS: false },
-		READ: { ADMIN: true, USER: true, ANONYMOUS: true },
-		UPDATE: { ADMIN: true, USER: false, ANONYMOUS: false },
-		DELETE: { ADMIN: true, USER: false, ANONYMOUS: false }
-	},
-	ACCOUNTS: {
-		CREATE: { ADMIN: true, USER: false, ANONYMOUS: true },
-		READ: { ADMIN: true, USER: false, ANONYMOUS: false },
-		UPDATE_OWN: { ADMIN: true, USER: true, ANONYMOUS: false },
-		UPDATE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false },
-		DELETE_OWN: { ADMIN: true, USER: true, ANONYMOUS: false },
-		DELETE_ALL: { ADMIN: true, USER: false, ANONYMOUS: false }
-	}
-}
 
 // Prevents flickering of unstyled U.I. (where styling is programmatic)
 document.body.classList.remove('hidden')
 
 const commentsElement = document.getElementById('comments')
+
 // Generate Comment section (starts with dummy comment)
-commentsElement.innerHTML = generatehtmlforcomment({
+commentsElement.insertAdjacentHTML('beforeend', generatehtmlforcomment({
 	comment: {
-		_id: null,
+		id: 'null',
 		text: 'Comment Section:',
-		accountID: null,
+		accountID: 'null',
 		articleID: document.getElementById('article-header').dataset.articleId,
-		parentCommentID: null
+		parentCommentID: 'null',
+		childCommentIDs: [ 'dummy-comment' ]
 	},
-	authorizedDelete: false,
-	authorizedCreate: false,
-	authorizedRemove: false,
-	authorizedFlag: false,
-	authorizedVote: false
-});
+	currentUser: getCurrentUser()
+}));
+
 // Listen for Click events on Comments section
 commentsElement.addEventListener('click', function(event) {
 	const commentElement = event.target.closest('.comment') //Get comment element clicked...
+	
 	// Toggles visibility of child Comments (and associated functionality)
 	// If no children exist will query for 1st page of child comments.
 	if(event.target.classList.contains('replies-toggle')) {
-		// comment -> p -> footer -> first
-		// var loadNew = commentElement.lastElementChild.firstElementChild.nextElementSibling.nextElementSibling
-		// var replies = loadNew.nextElementSibling
-		// var loadOld = replies.nextElementSibling
-		// var replyToggle = loadOld.nextElementSibling
-		// var create = replyToggle.nextElementSibling
-		var loadNew = commentElement.querySelector(':scope > footer > .load-newer');
-		var replies = commentElement.querySelector(':scope > footer > .replies');
-		var loadOld = commentElement.querySelector(':scope > footer > .load-older');
-		var replyToggle = commentElement.querySelector(':scope > footer > .reply-toggle');
-		var create = commentElement.querySelector(':scope > footer > .create');
 		if(event.target.textContent == 'Hide Replies') {
 			event.target.textContent = 'Show Replies';
-			loadNew.classList.add('hidden')
-			replies.classList.add('hidden')
-			loadOld.classList.add('hidden')
-			if(!create.classList.contains('hidden')) { // If create visibile
-				replyToggle.click()
+			commentElement.querySelector(':scope > * > * > .load-newer').classList.add('hidden')
+			commentElement.querySelector(':scope > * > .replies').classList.add('hidden')
+			commentElement.querySelector(':scope > * > .load-older').classList.add('hidden')
+			if(!commentElement.querySelector(':scope > * > .create').classList.contains('hidden')) { // If create visibile
+				commentElement.querySelector(':scope > * > * > .reply-toggle').click()
 			}
-			replyToggle.classList.add('hidden')
 		}
 		else {
 			event.target.textContent = 'Hide Replies';
-			loadNew.classList.remove('hidden')
-			replies.classList.remove('hidden')
-			loadOld.classList.remove('hidden')
-			if(IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()]) {
-				replyToggle.classList.remove('hidden')
-			}
-			if(replies.childNodes.length === 0) { //Try loading comments if none exit
-				loadComments({parentCommentElement: commentElement, newOrOldComments: 'OLD' })
+			commentElement.querySelector(':scope > * > * > .load-newer').classList.remove('hidden')
+			commentElement.querySelector(':scope > * > .replies').classList.remove('hidden')
+			commentElement.querySelector(':scope > * > .load-older').classList.remove('hidden')
+			if(commentElement.querySelector(':scope > * > .replies').childNodes.length === 0) { //Try loading comments if none exit
+				loadChildComments({parentCommentElement: commentElement, newOrOldComments: 'OLD' })
 			}
 		}
 	}
 	// Toggles Visibility of Create new Comment Form.
 	if(event.target.classList.contains('reply-toggle')) {
-		// var create = commentElement.querySelector('footer > .create');
-		var create = commentElement.lastElementChild.lastElementChild
 		if(event.target.innerHTML === 'Reply') {
 			event.target.innerHTML = 'Cancel'
-			create.classList.remove('hidden')
+			commentElement.querySelector(':scope > * > .create').classList.remove('hidden')
 		}
 		else {
 			event.target.innerHTML = 'Reply'
-			create.classList.add('hidden')
+			commentElement.querySelector(':scope > * > .create').classList.add('hidden')
 		}
 	}
 	// AJAX request to Delete comment
-	if(event.target.classList.contains('delete')) {
-		const client = new XMLHttpRequest();
-		client.onreadystatechange = function() {
-			if (this.readyState === XMLHttpRequest.DONE) {
-				const response = JSON.parse(this.response);
-				if(this.status === 200) {
-					commentElement.remove()
-				}
-				else {
-					handleServerErrorResponse('Delete Comment Failed.', response)
-				}
-			}
-		}
-		client.open('POST', '/comments/delete');
-		client.setRequestHeader("Content-Type", "application/json");
-		var data = {}
-		data._id = commentElement.dataset.id || null;
-		client.send(JSON.stringify(data));
-	}
-	// AJAX request to Delete comment
+	// if(event.target.classList.contains('delete')) {
+	// 	const client = new XMLHttpRequest();
+	// 	client.onreadystatechange = function() {
+	// 		if (this.readyState === XMLHttpRequest.DONE) {
+	// 			const response = JSON.parse(this.response);
+	// 			if(this.status === 200) {
+	// 				commentElement.remove()
+	// 			}
+	// 			else {
+	// 				handleServerErrorResponse('Delete Comment Failed.', response)
+	// 			}
+	// 		}
+	// 	}
+	// 	client.open('POST', '/comments/delete');
+	// 	client.setRequestHeader("Content-Type", "application/json");
+	// 	var data = {}
+	// 	data._id = commentElement.dataset.id || null;
+	// 	client.send(JSON.stringify(data));
+	// }
+	// AJAX request to Remove comment (hide text)
 	if(event.target.classList.contains('remove')) {
 		const client = new XMLHttpRequest();
 		client.onreadystatechange = function() {
@@ -138,6 +87,18 @@ commentsElement.addEventListener('click', function(event) {
 				const response = JSON.parse(this.response);
 				if(this.status === 200) {
 					commentElement.firstElementChild.innerHTML = '~~Comment has been Removed~~'
+					commentElement.querySelector(':scope > * > * > .replies-toggle').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .reply-toggle').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .up-vote-count').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .up-vote').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .down-vote-count').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .down-vote').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .remove').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .flag').classList.add('hidden')
+					commentElement.querySelector(':scope > * > * > .load-newer').classList.add('hidden')
+					commentElement.querySelector(':scope > * > .replies').classList.add('hidden')
+					commentElement.querySelector(':scope > * > .load-older').classList.add('hidden')
+					commentElement.querySelector(':scope > * > .create').classList.add('hidden')
 				}
 				else {
 					handleServerErrorResponse('Remove Comment Failed.', response)
@@ -150,7 +111,7 @@ commentsElement.addEventListener('click', function(event) {
 		data._id = commentElement.dataset.id || null;
 		client.send(JSON.stringify(data));
 	}
-	// AJAX request to Delete comment
+	// AJAX request to Flag comment
 	if(event.target.classList.contains('flag')) {
 		const client = new XMLHttpRequest();
 		client.onreadystatechange = function() {
@@ -206,36 +167,31 @@ commentsElement.addEventListener('click', function(event) {
 		client.send(JSON.stringify(data));
 	}
 	if(event.target.classList.contains('load-newer')) {
-		loadComments({parentCommentElement: commentElement, newOrOldComments: 'NEW' })
+		loadChildComments({parentCommentElement: commentElement, newOrOldComments: 'NEW' })
 	}
 	if(event.target.classList.contains('load-older')) {
-		loadComments({parentCommentElement: commentElement, newOrOldComments: 'OLD'})
+		loadChildComments({parentCommentElement: commentElement, newOrOldComments: 'OLD'})
 	}
 });
 // Listen for Submit events on Comments sections (create comment form)
 commentsElement.addEventListener('submit', function(event) {
 	const commentElement = event.target.closest('.comment')
 	if(event.target.classList.contains('create')) {
-		var repliesToggle = commentElement.querySelector(':scope > footer > div > .replies-toggle');
-		var loadNew = commentElement.querySelector(':scope > footer > .load-newer');
-		var replies = commentElement.querySelector(':scope > footer > .replies');
-		var loadOld = commentElement.querySelector(':scope > footer > .load-older');
-		var replyToggle = commentElement.querySelector(':scope > footer > .reply-toggle');
-		var create = commentElement.querySelector(':scope > footer > .create');
 		event.preventDefault();
 		const client = new XMLHttpRequest();
 		client.onreadystatechange = function() {
 			if (this.readyState === XMLHttpRequest.DONE) {
 				const response = JSON.parse(this.response);
 				if(this.status === 200) {
-					// Programmatically click load latest comments... if initial comment load exists
-					// Otherwise programmatically click show comments...
-					if(replies.childNodes.length === 0){
-						repliesToggle.click();
-						repliesToggle.click();
+					// If initial comment, unhide 'Show Comments' and click 'Show Comments'
+					// Otherwise Programmatically click load latest comments...
+					if(commentElement.querySelector(':scope > * > .replies').childNodes.length === 0){
+						commentElement.querySelector(':scope > * > * > .replies-toggle').classList.remove('hidden');
+						commentElement.querySelector(':scope > * > * > .replies-toggle').click();
 					}
-					else 
-						loadNew.click();
+					else {
+						commentElement.querySelector(':scope > * > * > .load-newer').click();
+					}
 
 				}
 				else {
@@ -312,24 +268,25 @@ document.getElementById('logout').addEventListener('click', function(event) {
 	client.open('POST', '/auth/local/logout');
 	client.send();
 })
-function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
+function loadChildComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 	var repliesElement = parentCommentElement.querySelector('.replies')
 	const query = {}
+
 	if(newOrOldComments === 'OLD') { 
-		// StartID is set to first comment of first page/batch query
-		query.startID = repliesElement.dataset.startID
+		// Start is set to initial load's first comment (not necessariliy first comment)
+		query.start = repliesElement.dataset.start //either 'newest' or some id
 		query.sortOrder = -1
 		query.pageNum = Number(repliesElement.dataset.pageNum || 1)
 		query.skipOnPage = Number(repliesElement.dataset.skipOnPage || 0)
 	}
 	else if(newOrOldComments === 'NEW') { 
 		// StartID is set to most recent comment (first child element)
-		query.startID = repliesElement.firstElementChild.dataset.id
+		query.start = repliesElement.firstElementChild.dataset.id
 		query.sortOrder = 1
 		query.pageNum = 1
 	}
 	query.pageSize = PAGE_SIZE
-	query.articleID = document.getElementById('article-header').dataset.articleId || null;
+	query.articleID = parentCommentElement.dataset.articleId
 	query.parentCommentID = parentCommentElement.dataset.id || null;
 	const queryString = JSON.stringify(query);
 	const encodedQuery = encodeURIComponent(queryString);
@@ -343,22 +300,20 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 				if(newOrOldComments === 'NEW') {
 					insertMethod = 'afterbegin'
 				}
-				else if(newOrOldComments === 'OLD') {  
-					if(!repliesElement.dataset.startID && comments.length > 0) {
-						repliesElement.dataset.startID = comments[0]._id
+				else if(newOrOldComments === 'OLD') {
+					// 'newest' indicates initial load of comments... save the start comment ID to data attribute
+					if(repliesElement.dataset.start == 'newest' && comments.length > 0) {
+						repliesElement.dataset.start = comments[0]._id
 					}
-					repliesElement.dataset.skipOnPage = (comments.length < PAGE_SIZE) ? comments.length : 0
-					repliesElement.dataset.pageNum = (comments.length < PAGE_SIZE) ? query.pageNum : query.pageNum+1
+					// Update skipOnPage
+					repliesElement.dataset.skipOnPage = ((comments.length + query.skipOnPage) < PAGE_SIZE) ? query.skipOnPage + comments.length : 0
+					repliesElement.dataset.pageNum = ((comments.length + query.skipOnPage) < PAGE_SIZE) ? query.pageNum : query.pageNum+1
 					insertMethod = 'beforeend'
 				}
 				for(var i = 0; i < comments.length; i++) {
 					const commentHtml = generatehtmlforcomment({
 						comment: comments[i],
-						authorizedDelete: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.DELETE[getVisitorType()],
-						authorizedCreate: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.CREATE[getVisitorType()],
-						authorizedRemove: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.REMOVE_OWN[getVisitorType()] && comments[i].accountID == getCurrentUser()._id,
-						authorizedFlag: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.FLAG[getVisitorType()],
-						authorizedVote: IDENTITY_ACCESS_MANAGMENT_LIST.COMMENTS.VOTE[getVisitorType()]
+						currentUser: getCurrentUser()
 					});
 					repliesElement.insertAdjacentHTML(insertMethod, commentHtml)
 				}
@@ -370,18 +325,6 @@ function loadComments({parentCommentElement, newOrOldComments='OLD' }={}) {
 	}
 	client.open('GET', '/comments/read?data='+encodedQuery);
 	client.send();
-}
-function getVisitorType() {
-	var user = getCurrentUser()
-	if(!user) {
-		return VISITOR_TYPE.ANONYMOUS
-	}
-	else if(user.email === ADMIN_EMAIL) {
-		return VISITOR_TYPE.ADMIN
-	}
-	else {
-		return VISITOR_TYPE.USER
-	}
 }
 function getCurrentUser() {
 	var user = getCookie('loggedInUser');

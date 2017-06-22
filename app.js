@@ -40,7 +40,15 @@ commonPug.compilePugFilesToClientJsFile({
   suffixForFunctions: 'generatehtmlfor'
 });
 
-commonMongo.connectDB("mongodb://172.17.0.2:27017/NodeJSWebApp");
+commonMongo.connectDB("mongodb://172.17.0.2:27017/NodeJSWebApp",
+  (error) => {
+    if(error) throw error
+    commonMongo.configureDB(
+      (error) => {
+      if(error) throw error;
+    })
+  });
+
 
 var app = express();
 app.set('views', './views');

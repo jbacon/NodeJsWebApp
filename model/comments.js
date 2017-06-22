@@ -19,6 +19,7 @@ module.exports = class Comment extends Document {
 		this.downVoteCount = comment.downVoteCount
 		this.flags = comment.flags
 		this.removed = comment.removed
+		this.childCommentIDs = comment.childCommentIDs
 	}
 	get accountID() {
 		return this._accountID;
@@ -123,6 +124,17 @@ module.exports = class Comment extends Document {
 		else
 			throw new Error('Invalid entry for... newRemoved: '+newRemoved)
 	}
+	get childCommentIDs() {
+		return this._childCommentIDs;
+	}
+	set childCommentIDs(newChildCommentIDs) {
+		if(newChildCommentIDs === null || newChildCommentIDs === undefined || newChildCommentIDs === '')
+			this._childCommentIDs = [];
+		else if(newChildCommentIDs instanceof Array)
+			_childCommentIDs = newChildCommentIDs
+		else
+			throw new Error('Invalid entry for... newChildCommentIDs: '+newChildCommentIDs)
+	}
 	toObject() {
 		var obj = super.toObject()
 		obj.accountID = this.accountID;
@@ -133,38 +145,67 @@ module.exports = class Comment extends Document {
 		obj.downVoteCount = this.downVoteCount;
 		obj.flags = this.flags;
 		obj.removed = this.removed;
+		obj.childCommentIDs = this.childCommentIDs;
 		return obj
 	}
 	static async create({ comment } = {}) {
 		if(!(comment instanceof Comment))
 			throw new Error('Parameter not instance of Comment')
+		// Try CREATE!
 		var results = await super.create({
 			doc: comment
 		})
+		// If new comment has a PARENT, then add it to the PARENTS childCommentList.
+		if(results.ops[0].parentCommentID) {
+			Comment.addChildComments({
+				_id: results.ops[0].parentCommentID.toString(),
+				childCommentIDs: [ results.ops[0]._id ]
+			})
+		}
 		return results
 	}
-	// Supports pagination via either skip/limit or find/limit (https://scalegrid.io/blog/fast-paging-with-mongodb/)
-	static async read({ articleID=undefined, parentCommentID=undefined, startID=undefined, pageSize=10, sortOrder=-1/*Ascending*/, pageNum=1, skipOnPage=0 } = {}) {
+	static async read({ id=undefined, articleID=undefined, parentCommentID=undefined, start=undefined, pageSize=10, sortOrder=-1/*Ascending*/, pageNum=1, skipOnPage=0 } = {}) {
+		//Build match query (based on paramaters)
 		var match = {}
-		if(articleID && mongodb.ObjectID.isValid(articleID))
-			match.articleID = mongodb.ObjectID(articleID);
-		else
-			match.articleID = null;
-		if(parentCommentID && mongodb.ObjectID.isValid(parentCommentID))
-			match.parentCommentID = mongodb.ObjectID(parentCommentID);
-		else
-			match.parentCommentID = null;
-		if(startID && mongodb.ObjectID.isValid(startID)){
-			if(sortOrder === -1) //Descending
-				match._id = { $lt: mongodb.ObjectID(startID) };
-			else if(sortOrder === 1) //Ascending
-				match._id = { $gt: mongodb.ObjectID(startID) };
+		if(id !== undefined) { 
+			if(id === 'null' || id === '' || id === null)
+				match._id = null
+			else if(mongodb.ObjectID.isValid(id))
+				match._id = mongodb.ObjectID(id);
+			else
+				throw new Error('Query parameter ID invalid for value: '+ID)
 		}
-		else{
-			if(sortOrder === -1) //Descending
-				match._id = { $lt: mongodb.ObjectID() };
-			else if(sortOrder === 1) //Ascending
-				match._id = { $gt: mongodb.ObjectID() };
+		else { // IF ID PROVIDED, then START IS IRRELEVANT TO QUERY!
+			if(start === 'newest') {
+				if(sortOrder === -1) //New -> Old
+					match._id = { $lt: mongodb.ObjectID() }
+				else if(sortOrder === 1) //Old -> New
+					match._id = { $gt: mongodb.ObjectID() };
+			}
+			else if(start !== undefined && start !== null && start != 'null' && mongodb.ObjectID.isValid(start)) {
+				if(sortOrder === -1) //New -> Old
+					match._id = { $lt: mongodb.ObjectID(start) }
+				else if(sortOrder === 1) //Old -> New
+					match._id = { $gt: mongodb.ObjectID(start) };
+			}
+			else
+				throw new Error('Query parameter start invalid for value: '+start)
+		}
+		if(articleID !== undefined) {
+			if(articleID === 'null' || articleID === null)
+				match.articleID = null
+			else if(mongodb.ObjectID.isValid(articleID))
+				match.articleID = mongodb.ObjectID(articleID);
+			else
+				throw new Error('Query parameter articleID invalid for value: '+articleID)
+		}
+		if(parentCommentID !== undefined) {
+			if(parentCommentID === 'null' || parentCommentID === null)
+				match.parentCommentID = null
+			else if(mongodb.ObjectID.isValid(parentCommentID))
+				match.parentCommentID = mongodb.ObjectID(parentCommentID);
+			else
+				throw new Error('Query parameter parentCommentID invalid for value: '+parentCommentID)
 		}
 		var results = await mongoUtil.getDB()
 			.collection(Comment.COLLECTION_NAME)
@@ -199,6 +240,23 @@ module.exports = class Comment extends Document {
 		});
 		return results
 	}
+	static async addChildComments({ _id, childCommentIDs } = {}) {
+		var objectID = new mongodb.ObjectID(_id);
+		return await mongoUtil.getDB()
+			.collection(Comment.COLLECTION_NAME).updateOne(
+				{
+					_id: objectID
+				},
+				{
+					$addToSet: {
+						childCommentIDs: { $each: childCommentIDs }
+					},
+					$currentDate: {
+						dateUpdated: { $type: "date" }
+					}
+				}
+			);
+	}
 	static async incrementDownVoteCount({ _id } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
 		return await mongoUtil.getDB()
@@ -209,6 +267,9 @@ module.exports = class Comment extends Document {
 				{
 					$inc: {
 						downVoteCount: 1
+					},
+					$currentDate: {
+						dateUpdated: { $type: "date" }
 					}
 				}
 			);
@@ -223,6 +284,9 @@ module.exports = class Comment extends Document {
 				{
 					$inc: {
 						upVoteCount: 1
+					},
+					$currentDate: {
+						dateUpdated: { $type: "date" }
 					}
 				}
 			);
@@ -237,6 +301,9 @@ module.exports = class Comment extends Document {
 				{
 					$inc: {
 						flags: 1
+					},
+					$currentDate: {
+						dateUpdated: { $type: "date" }
 					}
 				}
 			);
@@ -249,7 +316,12 @@ module.exports = class Comment extends Document {
 					_id: objectID
 				},
 				{
-					$set: { removed: true }
+					$set: { 
+						removed: true 
+					},
+					$currentDate: {
+						dateUpdated: { $type: "date" }
+					}
 				}
 			);
 	}

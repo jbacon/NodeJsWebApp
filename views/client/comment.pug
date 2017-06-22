@@ -1,20 +1,22 @@
-- var commentDisabled = comment.removed || comment.flags > 5
+- var isDisabled = comment.removed || comment.flags > 5
+- var isUser = currentUser
+- var isAdmin = currentUser === Object(currentUser) && currentUser.email === 'jbacon@zagmail.gonzaga.edu'
+- var isOwner = currentUser === Object(currentUser) && currentUser._id === comment.accountID
 article.comment(data-id=comment._id data-account-id=comment.accountID data-article-id=comment.articleID data-parent-comment-id=comment.parentCommentID)
-	p= (comment.removed || commentDisabled) ? '~~Comment has been Removed~~' : comment.text
+	p= (comment.removed || isDisabled) ? '~~Comment has been Removed~~' : comment.text
 	footer
-		div
-			span.replies-toggle.clickable Show Replies
-			span.up-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.upVoteCount
-			span.up-vote.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Up
-			span.down-vote-count(class=(authorizedVote && !commentDisabled) ? '' : 'hidden')= comment.downVoteCount
-			span.down-vote.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Down
-			span.delete.clickable(class=(authorizedDelete && !commentDisabled) ? '' : 'hidden') Delete
-			span.remove.clickable(class=(authorizedRemove && !commentDisabled) ? '' : 'hidden') Remove
-			span.flag.clickable(class=(authorizedVote && !commentDisabled) ? '' : 'hidden') Flag
-		div.load-newer.clickable.hidden Load New...
-		div.replies.hidden
-		div.load-older.cwlickable.hidden Load Older...
-		div.reply-toggle.clickable.hidden Reply
+		div.actions
+			span.replies-toggle.clickable(class=(comment.childCommentIDs.length > 0) ? '' : 'hidden') Show Replies
+			span.load-newer.clickable.hidden Load Latest...
+			span.reply-toggle.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Reply
+			span.up-vote-count(class=(!isDisabled) ? '' : 'hidden')= comment.upVoteCount
+			span.up-vote.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Up
+			span.down-vote-count(class=(!isDisabled) ? '' : 'hidden')= comment.downVoteCount
+			span.down-vote.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Down
+			span.remove.clickable(class=((isAdmin || isOwner) && !isDisabled) ? '' : 'hidden') Remove
+			span.flag.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Flag
+		div.replies.hidden(data-start='newest')
+		div.load-older.clickable.hidden Load More...
 		form.create.hidden(action='')
 			input.article-id(name='articleID' type='hidden' value=comment.articleID)
 			input.parent-comment-id(name='parentCommentID' type='hidden' value=comment._id)

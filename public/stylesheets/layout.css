@@ -94,8 +94,11 @@ main {
 .hidden {
 	display: none !important;
 }
+.clickable {
+	font-weight: bold;
+}
 .clickable:hover {
-    text-decoration: none;
+    text-decoration: underline;
 	cursor: pointer;
-	font-size: 130%;
+	font-size: 120%;
 }

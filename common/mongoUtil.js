@@ -1,22 +1,21 @@
 var mongodb = require('mongodb')
 var dbContext;
 
-exports.connectDB = function (url) {
-  console.log("Connecting MongoDB...");
+exports.connectDB = function (url, callback) {
   if(dbContext) {
-    console.log("Connection to MongoDB already exists...");
+    var error = new Error('Database context already exists')
+    callback(error)
   }
   else {
     mongodb.MongoClient.connect(
         url,
         (error, db) => {
           if(error) {
-            console.log("Connection to MongoDB failed...");
-            throw error
+            callback(error)
           }
           else  {
             dbContext = db;
-            console.log("Connection to MongoDB success...");
+            callback();
           }
         }
       );
@@ -33,5 +32,15 @@ exports.getDB = function() {
   }
   else {
     throw new Error('Database context does not exist.')
+  }
+}
+exports.configureDB = function(callback) {
+  if(dbContext) {
+    dbContext.createIndex('accounts', { email: 1 }, { unique: true });
+    callback()
+  }
+  else{
+    var error = new Error('Database context does not exist.')
+    callback(error)
   }
 }

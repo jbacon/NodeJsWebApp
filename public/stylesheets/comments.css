@@ -8,6 +8,7 @@ article.comment > h1 {
 article.comment > p {
 	margin: 0px 0px 0px 0px;
 	border-left: 2px outset red;
+	font-size: 18px;
 }
 article.comment > footer {
 	margin: 0px 0px 0px 0px;
@@ -16,30 +17,37 @@ article.comment > footer {
 }
 article.comment > footer > div {
 	line-height: 28px;
+	font-size: 12px;
 }
 article.comment > footer > div > span {
 	display: inline-block;
 	line-height: 25px;
+	padding: 0px 5px 0px 5px;
+	border-right: 2px outset red;
 }
-article.comment > footer > div > span.up-vote-count {
-}
-article.comment > footer > div > span.up-vote {
-}
-article.comment > footer > div > span.down-vote-count {
-}
-article.comment > footer > div > span.down-vote {
-}
-article.comment > footer > div > span.delete {
-}
-article.comment > footer > div > span.remove {
-}
-article.comment > footer > div > span.flag {
-}
-article.comment > footer > div.replies-toggle {
+article.comment > footer > div > span.replies-toggle {
 	margin: 0px 0px 0px 0px;
 }
-article.comment > footer > div.load-newer {
+article.comment > footer > div > span.load-newer {
 	margin: 0px 0px 0px 20px;
+}
+article.comment > footer > div > span.up-vote-count {
+	float: right;
+}
+article.comment > footer > div > span.up-vote {
+	float: right;
+}
+article.comment > footer > div > span.down-vote-count {
+	float: right;
+}
+article.comment > footer > div > span.down-vote {
+	float: right;
+}
+article.comment > footer > div > span.remove {
+	float: right;
+}
+article.comment > footer > div > span.flag {
+	float: right;
 }
 article.comment > footer > div.replies {
 	margin: 0px 0px 0px 20px;
