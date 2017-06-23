@@ -1,7 +1,7 @@
 # Personal Website/Blog: [NodeJs](https://nodejs.org/en/), [ExpressJS](https://expressjs.com/), & [VanillaJS](http://vanilla-js.com/) :)
 
 Thsi is a web app built entirely by me, Josh Bacon, for the purpose of learning javascript, nodejs, expressjs, mongodb, docker, and front/back-end web development... Attempts to use Single-Page Application patterns.
-![alt text](https://github.com/jbacon/NodeJsWebApp/tree/master/screenshots/home.png)
+![alt text](screenshots/home.png)
 
 ## Features to Implement:
 1. Threaded Comments Section (like Reddit)
@@ -11,7 +11,7 @@ Thsi is a web app built entirely by me, Josh Bacon, for the purpose of learning 
 	- Self-Referencing MongoDB table?
 	- Document per Comment or Document for Many Comments? or both!
 	- Combination thereof? (Probably best approach!)
-![alt text](https://github.com/jbacon/NodeJsWebApp/tree/master/screenshots/comments.png)
+![alt text](screenshots/comments.png)
 2. Markdown Articles (Blog Entries): 
 	- Backed in MongoDB!
 	- Integrate Markdown Editor! (browser based...)
@@ -23,7 +23,7 @@ Thsi is a web app built entirely by me, Josh Bacon, for the purpose of learning 
 	- Local Account Registration
 	- Google Authentication via passport-google.js
 	- Adminstrative Account (me!)
-![alt text](https://github.com/jbacon/NodeJsWebApp/tree/master/screenshots/register.png)
+![alt text](screenshots/register.png)
 4. About Me
 	- Static Content
 	- Resume
