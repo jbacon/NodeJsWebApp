@@ -3,6 +3,7 @@ var authUtil = require('../common/authUtil');
 var Account = require('../model/accounts');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
+var config = require('../config.json');
 var router = express.Router();
 
 router.post('/local/login', 
@@ -22,6 +23,16 @@ router.post('/local/login',
 	        	{ httpOnly: false });
 			res.clearCookie('JWT'); //Clear cookie
 			res.end();
+	}
+);
+router.get('/facebook', 
+	authUtil.getPassport().authenticate('facebook')
+);
+router.get('/facebook/callback', 
+	authUtil.getPassport().authenticate('facebook'),
+	function(req, res, next) {
+		// Successful authentication!
+		res.end();
 	}
 );
 router.post('/local/logout', (req, res, next) => {
@@ -59,10 +70,10 @@ router.post('/local/token', (req, res, next) => {
 			if(results.length > 0 && bcrypt.compareSync(req.body.password, results[0].passwordHashAndSalt)) {
 				var token = jwt.sign(
 					results[0],
-					'Super Secret Password!!',
+					config.jwtSecret,
 					{
 						algorithm: 'HS256',
-						expiresIn: '10m'
+						expiresIn: '1h'
 					});
 				res.cookie(
 		        	'loggedInUser',

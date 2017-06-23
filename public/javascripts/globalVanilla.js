@@ -17,10 +17,19 @@ commentsElement.insertAdjacentHTML('beforeend', generatehtmlforcomment({
 		accountID: 'null',
 		articleID: document.getElementById('article-header').dataset.articleId,
 		parentCommentID: 'null',
-		childCommentIDs: [ 'dummy-comment' ]
+		childCommentIDs: [ 'dummy-placeholder-enables-buttons'],
+		upVoteAccountIDs: [ ],
+		downVoteAccountIDs: [ ],
+		flags: [ ]
 	},
 	currentUser: getCurrentUser()
 }));
+commentsElement.firstElementChild.querySelector(':scope > * > * > .up-vote-count').classList.add('hidden')
+commentsElement.firstElementChild.querySelector(':scope > * > * > .up-vote').classList.add('hidden')
+commentsElement.firstElementChild.querySelector(':scope > * > * > .down-vote-count').classList.add('hidden')
+commentsElement.firstElementChild.querySelector(':scope > * > * > .down-vote').classList.add('hidden')
+commentsElement.firstElementChild.querySelector(':scope > * > * > .remove').classList.add('hidden')
+commentsElement.firstElementChild.querySelector(':scope > * > * > .flag').classList.add('hidden')
 
 // Listen for Click events on Comments section
 commentsElement.addEventListener('click', function(event) {
@@ -87,7 +96,6 @@ commentsElement.addEventListener('click', function(event) {
 				const response = JSON.parse(this.response);
 				if(this.status === 200) {
 					commentElement.firstElementChild.innerHTML = '~~Comment has been Removed~~'
-					commentElement.querySelector(':scope > * > * > .replies-toggle').classList.add('hidden')
 					commentElement.querySelector(':scope > * > * > .reply-toggle').classList.add('hidden')
 					commentElement.querySelector(':scope > * > * > .up-vote-count').classList.add('hidden')
 					commentElement.querySelector(':scope > * > * > .up-vote').classList.add('hidden')
@@ -95,9 +103,6 @@ commentsElement.addEventListener('click', function(event) {
 					commentElement.querySelector(':scope > * > * > .down-vote').classList.add('hidden')
 					commentElement.querySelector(':scope > * > * > .remove').classList.add('hidden')
 					commentElement.querySelector(':scope > * > * > .flag').classList.add('hidden')
-					commentElement.querySelector(':scope > * > * > .load-newer').classList.add('hidden')
-					commentElement.querySelector(':scope > * > .replies').classList.add('hidden')
-					commentElement.querySelector(':scope > * > .load-older').classList.add('hidden')
 					commentElement.querySelector(':scope > * > .create').classList.add('hidden')
 				}
 				else {
@@ -142,7 +147,7 @@ commentsElement.addEventListener('click', function(event) {
 				}
 			}
 		}
-		client.open('POST', '/comments/incrementUpVoteCount');
+		client.open('POST', '/comments/up-vote');
 		client.setRequestHeader("Content-Type", "application/json");
 		var data = {}
 		data._id = commentElement.dataset.id || null;
@@ -160,7 +165,7 @@ commentsElement.addEventListener('click', function(event) {
 				}
 			}
 		}
-		client.open('POST', '/comments/incrementDownVoteCount');
+		client.open('POST', '/comments/down-vote');
 		client.setRequestHeader("Content-Type", "application/json");
 		var data = {}
 		data._id = commentElement.dataset.id || null;
@@ -191,8 +196,9 @@ commentsElement.addEventListener('submit', function(event) {
 					}
 					else {
 						commentElement.querySelector(':scope > * > * > .load-newer').click();
+						commentElement.querySelector(':scope > * > * > .reply-toggle').click();
+						commentElement.querySelector(':scope > * > .create > input.text').value = '';
 					}
-
 				}
 				else {
 					handleServerErrorResponse('Create Comment Failed.', response)
@@ -338,3 +344,5 @@ function getCookie(name) {
 function handleServerErrorResponse(message, response) {
 	alert(message+'.. '+response.status +' - '+response.statusText+' ('+response.message+')');
 }
+
+

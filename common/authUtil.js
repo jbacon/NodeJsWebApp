@@ -2,8 +2,10 @@ var passport = require('passport'); // Authentication Framework
 var LocalStrategy = require('passport-local').Strategy; // Authentication Strategy
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
+var FacebookStrategy = require('passport-facebook').Strategy;
 var Account = require('../model/accounts');
 var bcrypt = require('bcryptjs');
+var config = require('../config.json');
 
 exports.getPassport = function() {
   return passport;
@@ -23,7 +25,7 @@ exports.extractJwt = function(req) {
     return token;
 };
 exports.isAdmin = function(req, res, next) {
-  if(req.user.email === 'jbacon@zagmail.gonzaga.edu') {
+  if(req.user.email === config.adminEmail) {
     next()
   }
   else {
@@ -120,7 +122,7 @@ passport.use('local-jwt', new JwtStrategy(
     passwordField: 'password',
     passReqToCallback: true,
     session: false,
-    secretOrKey: 'Super Secret Password!!',
+    secretOrKey: config.jwtSecret,
     jwtFromRequest: exports.extractJwt
   },
   (req, jwt_payload, next) => {
@@ -136,6 +138,50 @@ passport.use('local-jwt', new JwtStrategy(
     next(null, user)
   })
 );
+
+passport.use('facebook', new FacebookStrategy({
+    clientID: config.facebookAppID,
+    clientSecret: config.facebookAppSecret,
+    callbackURL: config.serverUrl+':'+config.serverPort+'/auth/facebook/callback',
+  },
+  function(accessToken, refreshToken, profile, next) {
+    // Find or Create Account!
+    Account.read(
+    {
+      query: { facebookProfileID: profile.id }
+    })
+    .then((results) => {
+      if(results.length > 0) {
+        // Account found!!
+        next(null, results[0]);
+      }
+      else {
+        // Account NOT found!
+        // Try Creating new Account!!
+        var account = new Account({
+          facebookProfileID: profile.id,
+          nameFirst: 'bob',
+          nameLast: 'bob',
+          email: profile.email,
+          password: bcrypt.hashSync('dummy', 10)
+        })
+        Account.create({ account: account })
+        .then((results) => {
+          next(null, false, results.ops[0])
+        })
+        .catch((err) => {
+          // Account create failed!
+          next(err)
+        });
+      }
+    })
+    .catch((err) => {
+      // Account read failed!
+      next(err)
+    });
+  }
+))
+
 passport.serializeUser(function(account, done) {
   done(null, JSON.stringify(account));
   // done(null, account.id);

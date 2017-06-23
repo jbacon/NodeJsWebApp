@@ -11,10 +11,17 @@ module.exports = class Account extends Document{
 	}
 	constructor(account) {
 		super(account);
+		this.facebookProfileID = account.facebookProfileID
 		this.email = account.email;
 		this.nameFirst = account.nameFirst;
 		this.nameLast = account.nameLast;
 		this.passwordHashAndSalt = account.passwordHashAndSalt;
+	}
+	get facebookProfileID() {
+		return this._facebookProfileID
+	}
+	set facebookProfileID(newFacebookProfileID) {
+		this._facebookProfileID = newFacebookProfileID
 	}
 	get email() {
 		return this._email;
@@ -61,6 +68,7 @@ module.exports = class Account extends Document{
 	}
 	toObject() {
 		var obj = super.toObject()
+		obj.facebookProfileID = this.facebookProfileID
 		obj.email = this.email;
 		obj.isAdmin = this.isAdmin;
 		obj.nameFirst = this.nameFirst;

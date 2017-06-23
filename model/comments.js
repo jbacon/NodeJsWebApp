@@ -15,8 +15,8 @@ module.exports = class Comment extends Document {
 		this.text = comment.text;
 		this.articleID = comment.articleID;
 		this.parentCommentID = comment.parentCommentID
-		this.upVoteCount = comment.upVoteCount
-		this.downVoteCount = comment.downVoteCount
+		this.upVoteAccountIDs = comment.upVoteAccountIDs
+		this.downVoteAccountIDs = comment.downVoteAccountIDs
 		this.flags = comment.flags
 		this.removed = comment.removed
 		this.childCommentIDs = comment.childCommentIDs
@@ -80,35 +80,35 @@ module.exports = class Comment extends Document {
 			throw new Error('Invalid entry for parentCommentID: '+newParentCommentID)
 		}
 	}
-	get upVoteCount() {
-		return this._upVoteCount;
+	get upVoteAccountIDs() {
+		return this._upVoteAccountIDs;
 	}
-	set upVoteCount(newUpVoteCount) {
-		if(newUpVoteCount === null || newUpVoteCount === undefined || newUpVoteCount === '')
-			this._upVoteCount = 0;
-		else if(typeof(newUpVoteCount) === 'number')
-			this._upVoteCount = newUpVoteCount;
+	set upVoteAccountIDs(newUpVoteAccountIDs) {
+		if(newUpVoteAccountIDs === null || newUpVoteAccountIDs === undefined || newUpVoteAccountIDs === '')
+			this._upVoteAccountIDs = [];
+		else if(newUpVoteAccountIDs instanceof Array)
+			this._upVoteAccountIDs = newUpVoteAccountIDs;
 		else
-			throw new Error('Invalid entry for newUpVoteCount: '+newUpVoteCount)
+			throw new Error('Invalid entry for newUpVoteAccountIDs: '+newUpVoteAccountIDs)
 	}
-	get downVoteCount() {
-		return this._downVoteCount;
+	get downVoteAccountIDs() {
+		return this._downVoteAccountIDs;
 	}
-	set downVoteCount(newDownVoteCount) {
-		if(newDownVoteCount === null || newDownVoteCount === undefined || newDownVoteCount === '')
-			this._downVoteCount = 0;
-		else if(typeof(newDownVoteCount) === 'number')
-			this._downVoteCount = newDownVoteCount;
+	set downVoteAccountIDs(newDownVoteAccountIDs) {
+		if(newDownVoteAccountIDs === null || newDownVoteAccountIDs === undefined || newDownVoteAccountIDs === '')
+			this._downVoteAccountIDs = [];
+		else if(newDownVoteAccountIDs instanceof Array)
+			this._downVoteAccountIDs = newDownVoteAccountIDs;
 		else
-			throw new Error('Invalid entry for... newDownVoteCount: '+newDownVoteCount)
+			throw new Error('Invalid entry for... newDownVoteAccountIDs: '+newDownVoteAccountIDs)
 	}
 	get flags() {
 		return this._flags;
 	}
 	set flags(newFlags) {
 		if(newFlags === null || newFlags === undefined || newFlags === '')
-			this._flags = 0;
-		else if(typeof(newFlags) === 'number')
+			this._flags = [];
+		else if(newFlags instanceof Array)
 			this._flags = newFlags;
 		else
 			throw new Error('Invalid entry for... newFlags: '+newFlags)
@@ -118,8 +118,8 @@ module.exports = class Comment extends Document {
 	}
 	set removed(newRemoved) {
 		if(newRemoved === null || newRemoved === undefined || newRemoved === '')
-			this._removed = false;
-		else if(typeof(newRemoved) === 'boolean')
+			this._removed = null;
+		else if(mongodb.ObjectID.isValid(newRemoved))
 			this._removed = newRemoved;
 		else
 			throw new Error('Invalid entry for... newRemoved: '+newRemoved)
@@ -141,8 +141,8 @@ module.exports = class Comment extends Document {
 		obj.text = this.text;
 		obj.articleID = this.articleID;
 		obj.parentCommentID = this.parentCommentID;
-		obj.upVoteCount = this.upVoteCount;
-		obj.downVoteCount = this.downVoteCount;
+		obj.upVoteAccountIDs = this.upVoteAccountIDs;
+		obj.downVoteAccountIDs = this.downVoteAccountIDs;
 		obj.flags = this.flags;
 		obj.removed = this.removed;
 		obj.childCommentIDs = this.childCommentIDs;
@@ -155,7 +155,7 @@ module.exports = class Comment extends Document {
 		var results = await super.create({
 			doc: comment
 		})
-		// If new comment has a PARENT, then add it to the PARENTS childCommentList.
+		// If new comment has a PARENT, then add new ID to the PARENTS childCommentList (for purpose as secondary search criteria)
 		if(results.ops[0].parentCommentID) {
 			Comment.addChildComments({
 				_id: results.ops[0].parentCommentID.toString(),
@@ -176,20 +176,17 @@ module.exports = class Comment extends Document {
 				throw new Error('Query parameter ID invalid for value: '+ID)
 		}
 		else { // IF ID PROVIDED, then START IS IRRELEVANT TO QUERY!
-			if(start === 'newest') {
-				if(sortOrder === -1) //New -> Old
-					match._id = { $lt: mongodb.ObjectID() }
-				else if(sortOrder === 1) //Old -> New
-					match._id = { $gt: mongodb.ObjectID() };
-			}
-			else if(start !== undefined && start !== null && start != 'null' && mongodb.ObjectID.isValid(start)) {
-				if(sortOrder === -1) //New -> Old
-					match._id = { $lt: mongodb.ObjectID(start) }
-				else if(sortOrder === 1) //Old -> New
-					match._id = { $gt: mongodb.ObjectID(start) };
-			}
+			var startObject;
+			if(start === 'newest')
+				startObject = mongodb.ObjectID()
+			else if(start !== undefined && start !== null && start != 'null' && mongodb.ObjectID.isValid(start))
+				startObject = mongodb.ObjectID(start)
 			else
 				throw new Error('Query parameter start invalid for value: '+start)
+			if(sortOrder === -1) //New -> Old
+				match._id = { $lt: startObject }
+			else if(sortOrder === 1) //Old -> New
+				match._id = { $gt: startObject };
 		}
 		if(articleID !== undefined) {
 			if(articleID === 'null' || articleID === null)
@@ -257,7 +254,7 @@ module.exports = class Comment extends Document {
 				}
 			);
 	}
-	static async incrementDownVoteCount({ _id } = {}) {
+	static async userDownVote({ _id, accountID } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
 		return await mongoUtil.getDB()
 			.collection(Comment.COLLECTION_NAME).updateOne(
@@ -265,8 +262,8 @@ module.exports = class Comment extends Document {
 					_id: objectID 
 				},
 				{
-					$inc: {
-						downVoteCount: 1
+					$addToSet: {
+						downVoteAccountIDs: accountID
 					},
 					$currentDate: {
 						dateUpdated: { $type: "date" }
@@ -274,7 +271,7 @@ module.exports = class Comment extends Document {
 				}
 			);
 	}
-	static async incrementUpVoteCount({ _id } = {}) {
+	static async userUpVote({ _id, accountID } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
 		return await mongoUtil.getDB()
 			.collection(Comment.COLLECTION_NAME).updateOne(
@@ -282,8 +279,8 @@ module.exports = class Comment extends Document {
 					_id: objectID 
 				},
 				{
-					$inc: {
-						upVoteCount: 1
+					$addToSet: {
+						upVoteAccountIDs: accountID
 					},
 					$currentDate: {
 						dateUpdated: { $type: "date" }
@@ -291,7 +288,7 @@ module.exports = class Comment extends Document {
 				}
 			);
 	}
-	static async flag({ _id } = {}) {
+	static async flag({ _id, accountID } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
 		return await mongoUtil.getDB()
 			.collection(Comment.COLLECTION_NAME).updateOne(
@@ -299,8 +296,8 @@ module.exports = class Comment extends Document {
 					_id: objectID 
 				},
 				{
-					$inc: {
-						flags: 1
+					$addToSet: {
+						flags: accountID
 					},
 					$currentDate: {
 						dateUpdated: { $type: "date" }
@@ -308,7 +305,7 @@ module.exports = class Comment extends Document {
 				}
 			);
 	}
-	static async remove({ _id } = {}) {
+	static async remove({ _id, accountID } = {}) {
 		var objectID = new mongodb.ObjectID(_id);
 		return await mongoUtil.getDB()
 			.collection(Comment.COLLECTION_NAME).updateOne(
@@ -317,7 +314,7 @@ module.exports = class Comment extends Document {
 				},
 				{
 					$set: { 
-						removed: true 
+						removed: accountID 
 					},
 					$currentDate: {
 						dateUpdated: { $type: "date" }

@@ -37,7 +37,7 @@ function pug_escape(e){var a=""+e,t=pug_match_html.exec(a);if(!t)return e;var r,
 var pug_has_own_property=Object.prototype.hasOwnProperty;
 var pug_match_html=/["&<>]/;
 function pug_rethrow(n,e,r,t){if(!(n instanceof Error))throw n;if(!("undefined"==typeof window&&e||t))throw n.message+=" on line "+r,n;try{t=t||require("fs").readFileSync(e,"utf8")}catch(e){pug_rethrow(n,null,r)}var i=3,a=t.split("\n"),o=Math.max(r-i,0),h=Math.min(a.length,r+i),i=a.slice(o,h).map(function(n,e){var t=e+o+1;return(t==r?"  > ":"    ")+t+"| "+n}).join("\n");throw n.path=e,n.message=(e||"Pug")+":"+r+"\n"+i+"\n\n"+n.message,n}function generatehtmlforcomment(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_debug_filename, pug_debug_line;try {;var locals_for_with = (locals || {});(function (Object, comment, currentUser) {;pug_debug_line = 1;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
-var isDisabled = comment.removed || comment.flags > 5
+var isDisabled = comment.removed || comment.flags.length > 5
 ;pug_debug_line = 2;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 var isUser = currentUser
 ;pug_debug_line = 3;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
@@ -69,7 +69,7 @@ pug_html = pug_html + "Reply\u003C\u002Fspan\u003E";
 ;pug_debug_line = 12;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 pug_html = pug_html + "\u003Cspan" + (pug_attr("class", pug_classes(["up-vote-count",(!isDisabled) ? '' : 'hidden'], [false,true]), false, false)) + "\u003E";
 ;pug_debug_line = 12;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
-pug_html = pug_html + (pug_escape(null == (pug_interp = comment.upVoteCount) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
+pug_html = pug_html + (pug_escape(null == (pug_interp = '+'+comment.upVoteAccountIDs.length) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
 ;pug_debug_line = 13;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 pug_html = pug_html + "\u003Cspan" + (pug_attr("class", pug_classes(["up-vote","clickable",(isUser && !isDisabled) ? '' : 'hidden'], [false,false,true]), false, false)) + "\u003E";
 ;pug_debug_line = 13;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
@@ -77,7 +77,7 @@ pug_html = pug_html + "Up\u003C\u002Fspan\u003E";
 ;pug_debug_line = 14;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 pug_html = pug_html + "\u003Cspan" + (pug_attr("class", pug_classes(["down-vote-count",(!isDisabled) ? '' : 'hidden'], [false,true]), false, false)) + "\u003E";
 ;pug_debug_line = 14;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
-pug_html = pug_html + (pug_escape(null == (pug_interp = comment.downVoteCount) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
+pug_html = pug_html + (pug_escape(null == (pug_interp = '-'+comment.downVoteAccountIDs.length) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
 ;pug_debug_line = 15;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";
 pug_html = pug_html + "\u003Cspan" + (pug_attr("class", pug_classes(["down-vote","clickable",(isUser && !isDisabled) ? '' : 'hidden'], [false,false,true]), false, false)) + "\u003E";
 ;pug_debug_line = 15;pug_debug_filename = ".\u002Fviews\u002Fclient\u002Fcomment.pug";

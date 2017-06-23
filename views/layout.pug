@@ -4,16 +4,8 @@ html
 		title= title
 		script(src='jspm_packages/system.js')
 		script(src='config.js')
-		//- script(src='javascripts/global.js')
 		script(src='javascripts/views/pug-functions-auto-generated.js')
 		script System.import('javascripts/globalVanilla.js');
-		//- script System.import('javascripts/views/pug-functions-auto-generated.js');
-		//- script(src='http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js' type='text/javascript')
-		//- // Interactive Layer - JQuery DOM manipulation
-		//- script(src='/javascripts/global.js' type='text/javascript')
-		//- // Presentation Layer - Component HTML (via pug generated client JS functions)
-		//- script(src='/javascripts/views/pug-functions-auto-generated.js' type='text/javascript')
-		//- CSS
 		link(rel='stylesheet', href='/stylesheets/layout.css')
 		link(rel='stylesheet', href='/stylesheets/login.css')
 		link(rel='stylesheet', href='/stylesheets/register.css')
@@ -56,6 +48,9 @@ html
 						label(for='password') Password
 						input.password(id='password' type='password' name='password' placeholder='password..')
 						input.submit(type='submit' href='#')
+					form#login-facebook-form(action='/auth/facebook' method='post')
+						input.submit(type='submit' href='#')
+					a#login-facebook-link(href='/auth/facebook') Facebook Login Link
 			div#register-modal-box--open.modal-box
 				a.modal-box__overlay(href='#')
 				div.modal-box__content

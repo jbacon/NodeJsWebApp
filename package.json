@@ -26,8 +26,10 @@
     "sanitize-html": "latest",
     "passport-local": "latest",
     "passport-jwt": "latest",
+    "passport-facebook": "latest",
     "validator": "latest",
-    "bcryptjs": "latest"
+    "bcryptjs": "latest",
+    "nodemailer": "latest"
   },
   "devDependencies": {
     "jspm": "latest"

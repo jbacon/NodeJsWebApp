@@ -1,4 +1,4 @@
-- var isDisabled = comment.removed || comment.flags > 5
+- var isDisabled = comment.removed || comment.flags.length > 5
 - var isUser = currentUser
 - var isAdmin = currentUser === Object(currentUser) && currentUser.email === 'jbacon@zagmail.gonzaga.edu'
 - var isOwner = currentUser === Object(currentUser) && currentUser._id === comment.accountID
@@ -9,9 +9,9 @@ article.comment(data-id=comment._id data-account-id=comment.accountID data-artic
 			span.replies-toggle.clickable(class=(comment.childCommentIDs.length > 0) ? '' : 'hidden') Show Replies
 			span.load-newer.clickable.hidden Load Latest...
 			span.reply-toggle.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Reply
-			span.up-vote-count(class=(!isDisabled) ? '' : 'hidden')= comment.upVoteCount
+			span.up-vote-count(class=(!isDisabled) ? '' : 'hidden')= '+'+comment.upVoteAccountIDs.length
 			span.up-vote.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Up
-			span.down-vote-count(class=(!isDisabled) ? '' : 'hidden')= comment.downVoteCount
+			span.down-vote-count(class=(!isDisabled) ? '' : 'hidden')= '-'+comment.downVoteAccountIDs.length
 			span.down-vote.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Down
 			span.remove.clickable(class=((isAdmin || isOwner) && !isDisabled) ? '' : 'hidden') Remove
 			span.flag.clickable(class=(isUser && !isDisabled) ? '' : 'hidden') Flag

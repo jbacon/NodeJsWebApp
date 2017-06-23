@@ -19,6 +19,8 @@ var commonMongo = require('./common/mongoUtil');
 var markdownUtil = require('./common/markdownUtil'); 
 var commonAuth = require('./common/authUtil'); 
 var commonPug = require('./common/pugUtil'); 
+// Config
+var config = require('./config.json');
 
 var logger = new (winston.Logger) ( {
   transports: [
@@ -40,7 +42,7 @@ commonPug.compilePugFilesToClientJsFile({
   suffixForFunctions: 'generatehtmlfor'
 });
 
-commonMongo.connectDB("mongodb://172.17.0.2:27017/NodeJSWebApp",
+commonMongo.connectDB(config.mongoDbUrl,
   (error) => {
     if(error) throw error
     commonMongo.configureDB(
@@ -57,7 +59,7 @@ app.use(express.static('./public'));
 // Setup Session - MongoDB Store
 var sessionStore = new MongoDBStore(
 {
-  uri: 'mongodb://172.17.0.2:27017/NodeJSWebApp',
+  uri: config.mongoDbUrl,
   collection: 'sessions'
 });
 sessionStore.on('error', function(error) {
@@ -65,7 +67,7 @@ sessionStore.on('error', function(error) {
   assert.ok(false);
 });
 app.use(session({
-  secret: 'This is a secret phrase',
+  secret: config.sessionSecret,
   cookie: {
     maxAge: 1000 * 60 * 5 // 5 minutes
   },
@@ -92,9 +94,9 @@ app.use(expressWinston.logger({
 
 app.use('/', routesIndex);
 app.use('/comments', routesComments);
-app.use('/articles', routesArticles);
+app.use('/article', routesArticles);
 app.use('/auth', routesAuth);
-app.use('/accounts', routesAccounts);
+app.use('/account', routesAccounts);
 
 // ROUTER LOGGING - AFTER routers BEFORE handlers
 app.use(expressWinston.errorLogger({
